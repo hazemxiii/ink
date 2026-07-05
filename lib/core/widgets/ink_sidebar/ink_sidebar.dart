@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
+import 'package:ink/core/widgets/ink_button.dart';
 import 'package:ink/core/widgets/ink_logo.dart';
 import 'package:ink/core/widgets/ink_sidebar/side_bar_list_widget.dart';
+import 'package:ink/features/lists/presentation/ui/add_list_dialog/add_list_dialog.dart';
 import 'package:ink/features/lists/presentation/viewmodels/lists_viewmodel.dart';
 import 'package:ink/features/lists/presentation/viewmodels/selected_list_viewmodel.dart';
 
@@ -23,22 +25,23 @@ class InkSidebar extends ConsumerWidget {
         children: [
           const InkLogo(),
           Text("Your lists", style: TextStyle(color: theme.secTextC)),
-          listsVieModel.when(
-            loading: () {
-              return Column(
-                // spacing: 16,
-                children: [
-                  SideBarListWidget.shimmer(),
-                  SideBarListWidget.shimmer(),
-                  SideBarListWidget.shimmer(),
-                ],
-              );
-            },
-            error: (error, stack) =>
-                Text("Error: $error", style: TextStyle(color: theme.secTextC)),
-            data: (lists) {
-              return Expanded(
-                child: ListView.builder(
+          Expanded(
+            child: listsVieModel.when(
+              loading: () {
+                return Column(
+                  children: [
+                    SideBarListWidget.shimmer(),
+                    SideBarListWidget.shimmer(),
+                    SideBarListWidget.shimmer(),
+                  ],
+                );
+              },
+              error: (error, stack) => Text(
+                "Error: $error",
+                style: TextStyle(color: theme.secTextC),
+              ),
+              data: (lists) {
+                return ListView.builder(
                   itemCount: lists.length,
                   itemBuilder: (context, index) => Container(
                     margin: const EdgeInsets.only(bottom: 5),
@@ -47,9 +50,24 @@ class InkSidebar extends ConsumerWidget {
                       isActive: selectedList.value == lists[index].id,
                     ),
                   ),
-                ),
+                );
+              },
+            ),
+          ),
+          InkButton(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => const AddListDialog(),
               );
             },
+            text: "New list",
+            icon: Icons.add,
+            backC: theme.backC,
+            textC: theme.secTextC,
+            borderC: theme.borderC,
+            // hoverTextC: theme.mainC,
+            hoverBorderC: theme.mainC,
           ),
         ],
       ),

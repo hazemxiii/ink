@@ -58,6 +58,7 @@ class ListPage extends ConsumerWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 16),
                   Expanded(
                     child: GridView.builder(
                       itemCount: list.notes.length,

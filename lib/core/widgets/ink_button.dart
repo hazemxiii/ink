@@ -7,18 +7,26 @@ class InkButton extends ConsumerStatefulWidget {
     required this.onTap,
     this.text,
     this.icon,
+    this.isCentered = true,
     required this.backC,
     required this.textC,
     this.hoverBackC,
     this.hoverTextC,
+    this.borderC,
+    this.hoverBorderC,
+    this.isLoading = false,
   });
   final VoidCallback onTap;
   final String? text;
   final IconData? icon;
+  final bool isCentered;
   final Color backC;
   final Color textC;
+  final Color? borderC;
   final Color? hoverBackC;
   final Color? hoverTextC;
+  final Color? hoverBorderC;
+  final bool isLoading;
 
   @override
   ConsumerState<InkButton> createState() => _InkButtonState();
@@ -49,14 +57,30 @@ class _InkButtonState extends ConsumerState<InkButton> {
         decoration: BoxDecoration(
           color: backC,
           borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: _hover
+                ? widget.hoverBorderC ?? widget.borderC ?? Colors.transparent
+                : widget.borderC ?? Colors.transparent,
+          ),
         ),
         child: Row(
+          mainAxisAlignment: widget.isCentered
+              ? MainAxisAlignment.center
+              : MainAxisAlignment.start,
           spacing: 5,
-          children: [
-            if (widget.icon != null) Icon(widget.icon, color: textC),
-            if (widget.text != null)
-              Text(widget.text!, style: TextStyle(color: textC)),
-          ],
+          children: widget.isLoading
+              ? [
+                  SizedBox(
+                    width: 15,
+                    height: 15,
+                    child: CircularProgressIndicator(color: textC),
+                  ),
+                ]
+              : [
+                  if (widget.icon != null) Icon(widget.icon, color: textC),
+                  if (widget.text != null)
+                    Text(widget.text!, style: TextStyle(color: textC)),
+                ],
         ),
       ),
     );

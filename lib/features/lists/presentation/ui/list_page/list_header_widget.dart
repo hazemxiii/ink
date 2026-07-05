@@ -12,8 +12,12 @@ class ListHeaderWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeViewmodelProvider);
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        CircleAvatar(
+          backgroundColor: list.color ?? Colors.transparent,
+          radius: 5,
+        ),
+        const SizedBox(width: 8),
         Text(
           list.name,
           style: TextStyle(
@@ -22,6 +26,7 @@ class ListHeaderWidget extends ConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
+        const Spacer(),
         SizedBox(
           width: 200,
           child: TextInput(

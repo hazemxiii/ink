@@ -37,7 +37,6 @@ class _NoteWidgetState extends ConsumerState<NoteWidget>
     super.dispose();
   }
 
-  // TODO continue implmeneting UI
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeViewmodelProvider);
@@ -65,11 +64,20 @@ class _NoteWidgetState extends ConsumerState<NoteWidget>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              DateFormat("MMM d, yyyy").format(widget.note.createdAt),
-              style: TextStyle(color: theme.secTextC),
+            Row(
+              spacing: 5,
+              children: [
+                CircleAvatar(radius: 3, backgroundColor: theme.mainC),
+                Text(
+                  DateFormat("MMM d, yyyy").format(widget.note.createdAt),
+                  style: TextStyle(color: theme.secTextC),
+                ),
+              ],
             ),
+            const SizedBox(height: 16),
             Text(
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               widget.note.title,
               style: TextStyle(
                 color: Color.lerp(
@@ -80,7 +88,10 @@ class _NoteWidgetState extends ConsumerState<NoteWidget>
                 fontSize: 18,
               ),
             ),
-            Text(widget.note.content),
+            Text(
+              "${widget.note.content.length} words",
+              style: TextStyle(color: theme.secTextC),
+            ),
           ],
         ),
       ),

@@ -42,7 +42,10 @@ class RemoteListsDatasource extends ListsDatasource {
   Future<List<InkList>> getLists() async {
     final json = (await _apiService.get("lists"))['lists'];
     try {
-      final list = json.map(InkList.fromJson).toList();
+      final list = json.map((e) {
+        e['notes'] = [];
+        return InkList.fromJson(e);
+      }).toList();
       return List<InkList>.from(list);
     } catch (e) {
       debugPrint(e.toString());

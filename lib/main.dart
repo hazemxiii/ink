@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/ink_sidebar/ink_sidebar.dart';
-import 'package:ink/features/lists/presentation/ui/list_page.dart';
+import 'package:ink/features/lists/presentation/ui/list_page/list_page.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -24,6 +24,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       routes: [
         ShellRoute(
           builder: (context, state, child) => Scaffold(
+            backgroundColor: theme.backC,
             appBar: AppBar(
               backgroundColor: theme.backC,
               foregroundColor: theme.textC,

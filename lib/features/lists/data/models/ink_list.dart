@@ -74,6 +74,7 @@ class InkList {
   String get id => _id;
   String get name => _name;
   Color? get color => _color;
+  List<Note> get notes => _notes;
   DateTime get createdAt => _createdAt;
   DateTime get updatedAt => _updatedAt;
 }

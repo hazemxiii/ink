@@ -58,6 +58,7 @@ class InkList {
   InkList copyWith({
     String? id,
     String? name,
+    Color? color,
     List<Note>? notes,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -65,6 +66,7 @@ class InkList {
     return InkList(
       id: id ?? _id,
       name: name ?? _name,
+      color: color ?? _color,
       notes: notes ?? _notes,
       createdAt: createdAt ?? _createdAt,
       updatedAt: updatedAt ?? _updatedAt,

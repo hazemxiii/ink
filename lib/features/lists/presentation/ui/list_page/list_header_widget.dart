@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/text_input.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
+import 'package:ink/features/lists/presentation/ui/add_list_dialog/add_list_dialog.dart';
 
 class ListHeaderWidget extends ConsumerWidget {
   const ListHeaderWidget({super.key, required this.list});
@@ -13,17 +14,31 @@ class ListHeaderWidget extends ConsumerWidget {
     final theme = ref.watch(themeViewmodelProvider);
     return Row(
       children: [
-        CircleAvatar(
-          backgroundColor: list.color ?? Colors.transparent,
-          radius: 5,
-        ),
-        const SizedBox(width: 8),
-        Text(
-          list.name,
-          style: TextStyle(
-            fontSize: 20,
-            color: theme.textC,
-            fontWeight: FontWeight.bold,
+        InkWell(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AddListDialog(list: list);
+              },
+            );
+          },
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: list.color ?? Colors.transparent,
+                radius: 5,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                list.name,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: theme.textC,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
         ),
         const Spacer(),

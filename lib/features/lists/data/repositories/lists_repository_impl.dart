@@ -6,15 +6,13 @@ class ListsRepositoryImpl extends ListsRepository {
   ListsRepositoryImpl(this._remoteListsDatasource);
   final ListsDatasource _remoteListsDatasource;
   @override
-  Future<InkList> createList(InkList list) {
-    // TODO: implement createList
-    throw UnimplementedError();
+  Future<InkList> createList(InkList list) async {
+    return await _remoteListsDatasource.createList(list);
   }
 
   @override
-  Future<void> deleteList(String id, {String? moveToId}) {
-    // TODO: implement deleteList
-    throw UnimplementedError();
+  Future<void> deleteList(String id, {String? moveToId}) async {
+    return await _remoteListsDatasource.deleteList(id, moveToId: moveToId);
   }
 
   @override
@@ -23,9 +21,8 @@ class ListsRepositoryImpl extends ListsRepository {
   }
 
   @override
-  Future<InkList> updateList(InkList list) {
-    // TODO: implement updateList
-    throw UnimplementedError();
+  Future<InkList> updateList(InkList list) async {
+    return await _remoteListsDatasource.updateList(list);
   }
 
   @override

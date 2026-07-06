@@ -5,6 +5,8 @@ import 'package:ink/core/widgets/ink_button.dart';
 import 'package:ink/core/widgets/text_input.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/presentation/ui/add_list_dialog/color_picker_row.dart';
+import 'package:ink/features/lists/presentation/viewmodels/list_viewmodel.dart';
+import 'package:ink/features/lists/presentation/viewmodels/lists_viewmodel.dart';
 
 class AddListDialog extends ConsumerStatefulWidget {
   const AddListDialog({super.key, this.list});
@@ -28,24 +30,6 @@ class _AddListDialogState extends ConsumerState<AddListDialog> {
     if (_isEditing) {
       _nameController.text = widget.list!.name;
     }
-  }
-
-  Future<void> addList() async {
-    if (_isLoading) return;
-    if (_nameController.text.isEmpty) {
-      setState(() {
-        _error = "List name cannot be empty";
-      });
-      return;
-    }
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    print(_nameController.text);
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   @override
@@ -83,12 +67,11 @@ class _AddListDialogState extends ConsumerState<AddListDialog> {
           ),
           TextInput(
             textInputAction: TextInputAction.done,
-            onSubmitted: (v) => addList(),
+            onSubmitted: (v) => _onSubmit(),
             controller: _nameController,
             label: "List name",
             textC: theme.mainC,
           ),
-          // TODO pick color
           ColorPickerRow(
             selectedColor: _selectedColor,
             onColorChanged: (c) {
@@ -98,8 +81,8 @@ class _AddListDialogState extends ConsumerState<AddListDialog> {
             },
           ),
           InkButton(
-            onTap: addList,
-            text: "Create",
+            onTap: _onSubmit,
+            text: _isEditing ? "Save" : "Create",
             backC: theme.mainC,
             textC: theme.textC,
             isLoading: _isLoading,
@@ -112,5 +95,52 @@ class _AddListDialogState extends ConsumerState<AddListDialog> {
         ],
       ),
     );
+  }
+
+  Future<void> _onSubmit() async {
+    if (_isLoading) return;
+    if (_nameController.text.isEmpty) {
+      setState(() {
+        _error = "List name cannot be empty";
+      });
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      if (_isEditing) {
+        await ref
+            .read(listViewmodelProvider(widget.list!.id).notifier)
+            .updateList(
+              widget.list!.copyWith(
+                name: _nameController.text,
+                color: _selectedColor,
+              ),
+            );
+      } else {
+        await ref
+            .read(listsViewmodelProvider.notifier)
+            .addList(
+              InkList(
+                name: _nameController.text,
+                color: _selectedColor,
+                id: '',
+                notes: [],
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+              ),
+            );
+      }
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+      });
+    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 }

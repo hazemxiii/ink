@@ -24,6 +24,10 @@ class ListsViewmodel extends StreamNotifier<List<InkList>> {
       state.value!.map((e) => e.id == list.id ? resultList : e).toList(),
     );
   }
+
+  Future<void> createNote() async {
+    // TODO implement
+  }
 }
 
 final listsViewmodelProvider =

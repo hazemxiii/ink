@@ -119,6 +119,7 @@ class _AddListDialogState extends ConsumerState<AddListDialog> {
                 color: _selectedColor,
               ),
             );
+        ref.invalidate(listsViewmodelProvider);
       } else {
         await ref
             .read(listsViewmodelProvider.notifier)

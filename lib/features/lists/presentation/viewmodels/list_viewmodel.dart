@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/domain/usecases/get_list.dart';
 import 'package:ink/features/lists/domain/usecases/update_list.dart';
+import 'package:ink/features/notes/data/models/note.dart';
+import 'package:ink/features/notes/domain/usecases/create_note.dart';
 
 class ListViewmodel extends AsyncNotifier<InkList> {
   ListViewmodel(this.id);
@@ -15,10 +17,28 @@ class ListViewmodel extends AsyncNotifier<InkList> {
   }
 
   Future<void> updateList(InkList list) async {
-    state = await AsyncValue.guard(() async {
-      final updateList = ref.read(updateListProvider);
-      return await updateList(list);
-    });
+    final updateList = ref.read(updateListProvider);
+    await updateList(list);
+    state = AsyncValue.data(list.copyWith(notes: state.value!.notes));
+  }
+
+  Future<String> createNote() async {
+    final noteId = await ref.read(createNoteProvider)(id);
+    state = AsyncValue.data(
+      state.value!.copyWith(
+        notes: [
+          ...state.value!.notes,
+          Note(
+            id: noteId,
+            title: '',
+            content: '',
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+        ],
+      ),
+    );
+    return noteId;
   }
 }
 

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
+import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/notes/data/models/note.dart';
+import 'package:ink/features/notes/presentation/ui/note_dialog/note_dialog.dart';
 import 'package:intl/intl.dart';
 
 class NoteWidget extends ConsumerStatefulWidget {
-  const NoteWidget({super.key, required this.note});
+  const NoteWidget({super.key, required this.note, required this.list});
 
   final Note note;
+  final InkList list;
 
   @override
   ConsumerState<NoteWidget> createState() => _NoteWidgetState();
@@ -44,7 +47,19 @@ class _NoteWidgetState extends ConsumerState<NoteWidget>
       hoverColor: Colors.transparent,
       highlightColor: Colors.transparent,
       splashColor: Colors.transparent,
-      onTap: () {},
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              return NoteDialog(
+                note: widget.note,
+                createNew: false,
+                list: widget.list,
+              );
+            },
+          ),
+        );
+      },
       onHover: (value) {
         value ? _hoverController.forward() : _hoverController.reverse();
       },

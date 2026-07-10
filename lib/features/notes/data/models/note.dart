@@ -7,6 +7,16 @@ class Note {
     required this._updatedAt,
   });
 
+  factory Note.empty() {
+    return Note(
+      id: '',
+      title: '',
+      content: '',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+  }
+
   factory Note.fromJson(dynamic json) {
     json = Map<String, dynamic>.from(json);
     return Note(

@@ -6,6 +6,8 @@ import 'package:ink/features/lists/presentation/ui/list_page/list_header_widget.
 import 'package:ink/features/lists/presentation/ui/list_page/note_widget.dart';
 import 'package:ink/features/lists/presentation/viewmodels/list_viewmodel.dart';
 import 'package:ink/features/lists/presentation/viewmodels/selected_list_viewmodel.dart';
+import 'package:ink/features/notes/data/models/note.dart';
+import 'package:ink/features/notes/presentation/ui/note_dialog/note_dialog.dart';
 
 class ListPage extends ConsumerWidget {
   const ListPage({super.key});
@@ -50,7 +52,19 @@ class ListPage extends ConsumerWidget {
                         ),
                       ),
                       InkButton(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return NoteDialog(
+                                  note: Note.empty(),
+                                  list: list,
+                                  createNew: true,
+                                );
+                              },
+                            ),
+                          );
+                        },
                         backC: theme.mainC,
                         textC: theme.textC,
                         text: "New Note",
@@ -70,7 +84,7 @@ class ListPage extends ConsumerWidget {
                           ),
                       itemBuilder: (context, index) {
                         final note = list.notes[index];
-                        return NoteWidget(note: note);
+                        return NoteWidget(note: note, list: list);
                       },
                     ),
                   ),

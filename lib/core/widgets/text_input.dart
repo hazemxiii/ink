@@ -16,6 +16,8 @@ class TextInput extends ConsumerWidget {
     this.fillC,
     this.onSubmitted,
     this.textInputAction,
+    this.noBorder = false,
+    this.onChanged,
   });
 
   final bool isOutlined;
@@ -29,6 +31,8 @@ class TextInput extends ConsumerWidget {
   final Color? fillC;
   final ValueChanged<String>? onSubmitted;
   final TextInputAction? textInputAction;
+  final bool noBorder;
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -62,15 +66,16 @@ class TextInput extends ConsumerWidget {
       );
     }
     return TextField(
+      onChanged: onChanged,
       onSubmitted: onSubmitted,
       textInputAction: textInputAction,
       cursorColor: textC ?? theme.textC,
       style: TextStyle(color: textC ?? theme.textC),
       controller: controller,
       decoration: InputDecoration(
-        border: border,
-        enabledBorder: border,
-        focusedBorder: focusBorder,
+        border: noBorder ? InputBorder.none : border,
+        enabledBorder: noBorder ? InputBorder.none : border,
+        focusedBorder: noBorder ? InputBorder.none : focusBorder,
         fillColor: fillC,
         filled: fillC != null,
         hintText: hint,

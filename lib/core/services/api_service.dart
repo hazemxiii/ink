@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:ink/core/exceptions/ink_exception.dart';
@@ -21,6 +22,7 @@ class ApiService {
           "Authorization": "Bearer $_token",
         },
       );
+      debugPrint("GET: $path\n ${response.body}\n===================");
     } catch (e) {
       throw InkException("Failed to reach the server");
     }
@@ -48,6 +50,7 @@ class ApiService {
           "Authorization": "Bearer $_token",
         },
       );
+      debugPrint("POST: $path\n ${response.body}\n===================");
     } catch (e) {
       throw InkException("Failed to reach the server");
     }
@@ -75,6 +78,7 @@ class ApiService {
           "Authorization": "Bearer $_token",
         },
       );
+      debugPrint("PATCH: $path\n ${response.body}\n===================");
     } catch (e) {
       throw InkException("Failed to reach the server");
     }
@@ -101,6 +105,7 @@ class ApiService {
           "Authorization": "Bearer $_token",
         },
       );
+      debugPrint("DELETE: $path\n ${response.body}\n===================");
     } catch (e) {
       throw InkException("Failed to reach the server");
     }

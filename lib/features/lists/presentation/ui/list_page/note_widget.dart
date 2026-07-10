@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/notes/data/models/note.dart';
-import 'package:ink/features/notes/presentation/ui/note_dialog/note_dialog.dart';
+import 'package:ink/features/notes/presentation/ui/note_page/note_page.dart';
 import 'package:intl/intl.dart';
 
 class NoteWidget extends ConsumerStatefulWidget {
@@ -51,7 +51,7 @@ class _NoteWidgetState extends ConsumerState<NoteWidget>
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) {
-              return NoteDialog(
+              return NotePage(
                 note: widget.note,
                 createNew: false,
                 list: widget.list,

@@ -6,6 +6,7 @@ import 'package:ink/features/lists/domain/usecases/get_list.dart';
 import 'package:ink/features/lists/domain/usecases/update_list.dart';
 import 'package:ink/features/notes/data/models/note.dart';
 import 'package:ink/features/notes/domain/usecases/create_note.dart';
+import 'package:ink/features/notes/domain/usecases/update_note.dart';
 
 class ListViewmodel extends AsyncNotifier<InkList> {
   ListViewmodel(this.id);
@@ -39,6 +40,18 @@ class ListViewmodel extends AsyncNotifier<InkList> {
       ),
     );
     return noteId;
+  }
+
+  Future<void> updateNote(Note note) async {
+    final updateNote = ref.read(updateNoteProvider);
+    final updatedNote = await updateNote(note);
+    state = AsyncValue.data(
+      state.value!.copyWith(
+        notes: state.value!.notes
+            .map((e) => e.id == note.id ? updatedNote : e)
+            .toList(),
+      ),
+    );
   }
 }
 

@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/features/notes/data/datasources/remote_notes_datasource.dart';
+import 'package:ink/features/notes/data/models/note.dart';
 import 'package:ink/features/notes/domain/repositories/notes_repository_impl.dart';
 
 abstract class NotesRepository {
   Future<String> create(String listId);
+  Future<Note> update(Note note);
 }
 
 final notesRepositoryProvider = Provider<NotesRepository>(

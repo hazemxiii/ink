@@ -7,7 +7,7 @@ import 'package:ink/features/lists/presentation/ui/list_page/note_widget.dart';
 import 'package:ink/features/lists/presentation/viewmodels/list_viewmodel.dart';
 import 'package:ink/features/lists/presentation/viewmodels/selected_list_viewmodel.dart';
 import 'package:ink/features/notes/data/models/note.dart';
-import 'package:ink/features/notes/presentation/ui/note_dialog/note_dialog.dart';
+import 'package:ink/features/notes/presentation/ui/note_page/note_page.dart';
 
 class ListPage extends ConsumerWidget {
   const ListPage({super.key});
@@ -56,7 +56,7 @@ class ListPage extends ConsumerWidget {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) {
-                                return NoteDialog(
+                                return NotePage(
                                   note: Note.empty(),
                                   list: list,
                                   createNew: true,

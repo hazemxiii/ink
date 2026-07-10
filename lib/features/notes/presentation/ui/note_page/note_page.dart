@@ -2,16 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ink/core/enums/loading_state.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/text_input.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/presentation/viewmodels/list_viewmodel.dart';
 import 'package:ink/features/notes/data/models/note.dart';
-import 'package:ink/features/notes/presentation/ui/note_dialog/page_footer.dart';
+import 'package:ink/features/notes/presentation/ui/note_page/note_footer.dart';
 import 'package:intl/intl.dart';
 
-class NoteDialog extends ConsumerStatefulWidget {
-  const NoteDialog({
+class NotePage extends ConsumerStatefulWidget {
+  const NotePage({
     super.key,
     required this._note,
     required this._createNew,
@@ -22,14 +23,14 @@ class NoteDialog extends ConsumerStatefulWidget {
   final bool _createNew;
 
   @override
-  ConsumerState<NoteDialog> createState() => _NoteDialogState();
+  ConsumerState<NotePage> createState() => _NoteDialogState();
 }
 
-class _NoteDialogState extends ConsumerState<NoteDialog> {
+class _NoteDialogState extends ConsumerState<NotePage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   late Note _note;
-  bool _isLoading = false;
+  LoadingState _loadingState = LoadingState.done;
   bool _pendingSave = false;
   Timer? _debounce;
   @override
@@ -81,8 +82,19 @@ class _NoteDialogState extends ConsumerState<NoteDialog> {
             hint: "Title",
             noBorder: true,
           ),
+          TextInput(
+            onChanged: (_) {
+              setState(() {
+                _note = _note.copyWith(content: _contentController.text);
+              });
+              _updateNote();
+            },
+            controller: _contentController,
+            hint: "Content",
+            noBorder: true,
+          ),
           const Spacer(),
-          PageFooter(note: _note, isLoading: _isLoading),
+          NoteFooter(note: _note, loadingState: _loadingState),
         ],
       ),
     );
@@ -94,16 +106,17 @@ class _NoteDialogState extends ConsumerState<NoteDialog> {
       if (_note.id.isNotEmpty) {
         _note = Note.empty();
       }
-      _isLoading = true;
+      _loadingState = LoadingState.loading;
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         await _createNewNote();
         if (_pendingSave) {
           _pendingSave = false;
           _updateNote();
+        } else {
+          setState(() {
+            _loadingState = LoadingState.done;
+          });
         }
-        setState(() {
-          _isLoading = false;
-        });
       });
     }
   }
@@ -124,19 +137,28 @@ class _NoteDialogState extends ConsumerState<NoteDialog> {
 
   Future<void> _updateNote() async {
     setState(() {
-      _isLoading = true;
+      _loadingState = LoadingState.loading;
     });
     _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () async {
+    _debounce = Timer(const Duration(seconds: 1), () async {
       if (_note.id.isEmpty) {
         _pendingSave = true;
       } else {
-        print("Updating note:${_note.toJson()}");
-        // TODO update note
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
+        try {
+          await ref
+              .read(listViewmodelProvider(widget.list.id).notifier)
+              .updateNote(_note);
+          if (mounted) {
+            setState(() {
+              _loadingState = LoadingState.done;
+            });
+          }
+        } catch (e) {
+          if (mounted) {
+            setState(() {
+              _loadingState = LoadingState.error;
+            });
+          }
         }
       }
     });

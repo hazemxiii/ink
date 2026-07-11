@@ -5,8 +5,8 @@ import 'package:ink/features/lists/domain/repositories/lists_repository.dart';
 class GetList {
   GetList(this._repository);
   final ListsRepository _repository;
-  Future<InkList> call(String id) async {
-    return await _repository.getList(id);
+  Stream<InkList> call(String id) {
+    return _repository.watchList(id);
   }
 }
 

@@ -16,8 +16,8 @@ class ListsRepositoryImpl extends ListsRepository {
   }
 
   @override
-  Future<InkList> getList(String id) async {
-    return await _remoteListsDatasource.getList(id);
+  Stream<InkList> watchList(String id) async*{
+    yield await _remoteListsDatasource.getList(id);
   }
 
   @override

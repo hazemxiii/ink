@@ -4,12 +4,15 @@ import 'package:ink/core/enums/loading_state.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/confirm_dialog.dart';
 import 'package:ink/core/widgets/ink_button.dart';
+import 'package:ink/features/lists/data/models/ink_list.dart';
+import 'package:ink/features/lists/presentation/viewmodels/list_viewmodel.dart';
 import 'package:ink/features/notes/data/models/note.dart';
 
 class NoteFooter extends ConsumerWidget {
-  const NoteFooter({super.key, required this.loadingState, required this.note});
+  const NoteFooter({super.key, required this.loadingState, required this.note, required this.list});
   final LoadingState loadingState;
   final Note note;
+  final InkList list;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,7 +38,10 @@ class NoteFooter extends ConsumerWidget {
                 ),
               );
               if (confirm == true) {
-                // TODO delete note
+                ref.read(listViewmodelProvider(list.id).notifier).deleteNote(note.id);
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               }
             },
             backC: theme.backC,

@@ -6,7 +6,7 @@ import 'package:ink/features/lists/data/repositories/lists_repository_impl.dart'
 abstract class ListsRepository {
   Stream<List<InkList>> watchLists();
 
-  Future<InkList> getList(String id);
+  Stream<InkList> watchList(String id);
 
   Future<InkList> createList(InkList list);
 

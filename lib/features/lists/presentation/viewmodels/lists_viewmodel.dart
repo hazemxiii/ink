@@ -11,6 +11,8 @@ class ListsViewmodel extends StreamNotifier<List<InkList>> {
     yield* watchLists();
   }
 
+  
+
   Future<void> addList(InkList list) async {
     final createList = ref.read(createListProvider);
     final resultList = await createList(list);

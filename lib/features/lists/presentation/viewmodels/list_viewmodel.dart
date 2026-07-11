@@ -6,15 +6,16 @@ import 'package:ink/features/lists/domain/usecases/get_list.dart';
 import 'package:ink/features/lists/domain/usecases/update_list.dart';
 import 'package:ink/features/notes/data/models/note.dart';
 import 'package:ink/features/notes/domain/usecases/create_note.dart';
+import 'package:ink/features/notes/domain/usecases/delete_note.dart';
 import 'package:ink/features/notes/domain/usecases/update_note.dart';
 
-class ListViewmodel extends AsyncNotifier<InkList> {
+class ListViewmodel extends StreamNotifier<InkList> {
   ListViewmodel(this.id);
   final String id;
   @override
-  FutureOr<InkList> build() async {
+  Stream<InkList> build() {
     final getList = ref.read(getListProvider);
-    return await getList(id);
+    return getList(id);
   }
 
   Future<void> updateList(InkList list) async {
@@ -53,9 +54,21 @@ class ListViewmodel extends AsyncNotifier<InkList> {
       ),
     );
   }
+  
+  Future<void> deleteNote(String noteId) async {
+    final deleteNote = ref.read(deleteNoteProvider); 
+    await deleteNote(noteId);
+    state = AsyncValue.data(
+      state.value!.copyWith(
+        notes: state.value!.notes
+            .where((e) => e.id != noteId)
+            .toList(),
+      ),
+    );
+  }
 }
 
 final listViewmodelProvider =
-    AsyncNotifierProvider.family<ListViewmodel, InkList, String>(
+    StreamNotifierProvider.family<ListViewmodel, InkList, String>(
       ListViewmodel.new,
     );

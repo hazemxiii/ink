@@ -94,7 +94,7 @@ class _NoteDialogState extends ConsumerState<NotePage> {
             noBorder: true,
           ),
           const Spacer(),
-          NoteFooter(note: _note, loadingState: _loadingState),
+          NoteFooter(note: _note, loadingState: _loadingState, list: widget.list),
         ],
       ),
     );

@@ -16,60 +16,76 @@ class InkSidebar extends ConsumerWidget {
     final theme = ref.watch(themeViewmodelProvider);
     final listsVieModel = ref.watch(listsViewmodelProvider);
     final selectedList = ref.watch(selectedListProvider);
-    return Container(
-      padding: const EdgeInsets.all(16),
-      width: 300,
-      color: theme.backC,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const InkLogo(),
-          Text("Your lists", style: TextStyle(color: theme.secTextC)),
-          Expanded(
-            child: listsVieModel.when(
-              loading: () {
-                return Column(
-                  children: [
-                    SideBarListWidget.shimmer(),
-                    SideBarListWidget.shimmer(),
-                    SideBarListWidget.shimmer(),
-                  ],
-                );
-              },
-              error: (error, stack) => Text(
-                "Error: $error",
-                style: TextStyle(color: theme.secTextC),
-              ),
-              data: (lists) {
-                return ListView.builder(
-                  itemCount: lists.length,
-                  itemBuilder: (context, index) => Container(
-                    margin: const EdgeInsets.only(bottom: 5),
-                    child: SideBarListWidget(
-                      list: lists[index],
-                      isActive: selectedList.value == lists[index].id,
-                    ),
-                  ),
-                );
-              },
+    return RefreshIndicator(
+      onRefresh: () async { 
+        ref.invalidate(listsViewmodelProvider);
+       },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        width: 300,
+        color: theme.backC,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const InkLogo(),
+            Row(
+              children: [
+                Text("Your lists", style: TextStyle(color: theme.secTextC)),
+                const Spacer(),
+                IconButton(
+                  onPressed: () {
+                    ref.invalidate(listsViewmodelProvider);
+                  },
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
             ),
-          ),
-          InkButton(
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => const AddListDialog(),
-              );
-            },
-            text: "New list",
-            icon: Icons.add,
-            backC: theme.backC,
-            textC: theme.secTextC,
-            borderC: theme.borderC,
-            // hoverTextC: theme.mainC,
-            hoverBorderC: theme.mainC,
-          ),
-        ],
+            Expanded(
+              child: listsVieModel.when(
+                loading: () {
+                  return Column(
+                    children: [
+                      SideBarListWidget.shimmer(),
+                      SideBarListWidget.shimmer(),
+                      SideBarListWidget.shimmer(),
+                    ],
+                  );
+                },
+                error: (error, stack) => Text(
+                  "Error: $error",
+                  style: TextStyle(color: theme.secTextC),
+                ),
+                data: (lists) {
+                  return ListView.builder(
+                    itemCount: lists.length,
+                    itemBuilder: (context, index) => Container(
+                      margin: const EdgeInsets.only(bottom: 5),
+                      child: SideBarListWidget(
+                        list: lists[index],
+                        isActive: selectedList.value == lists[index].id,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            InkButton(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => const AddListDialog(),
+                );
+              },
+              text: "New list",
+              icon: Icons.add,
+              backC: theme.backC,
+              textC: theme.secTextC,
+              borderC: theme.borderC,
+              // hoverTextC: theme.mainC,
+              hoverBorderC: theme.mainC,
+            ),
+          ],
+        ),
       ),
     );
   }

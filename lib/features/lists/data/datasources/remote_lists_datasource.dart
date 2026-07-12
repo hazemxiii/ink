@@ -26,9 +26,8 @@ class RemoteListsDatasource extends ListsDatasource {
   }
 
   @override
-  Future<void> deleteList(String id, {String? moveToId}) {
-    // TODO: implement deleteList
-    throw UnimplementedError();
+  Future<void> deleteList(String id, {String? moveToId}) async {
+    return await _apiService.delete("lists/$id");
   }
 
   @override

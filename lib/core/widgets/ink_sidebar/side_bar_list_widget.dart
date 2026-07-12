@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
+import 'package:ink/core/widgets/ink_button.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
+import 'package:ink/features/lists/presentation/ui/add_list_dialog/add_list_dialog.dart';
 import 'package:ink/features/lists/presentation/viewmodels/selected_list_viewmodel.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -25,6 +30,16 @@ class SideBarListWidget extends ConsumerStatefulWidget {
 
 class _SideBarListWidgetState extends ConsumerState<SideBarListWidget> {
   bool _hovered = false;
+  bool get _isMobile {
+    if (kIsWeb) {
+      return false;
+    }
+    if (Platform.isAndroid || Platform.isIOS) {
+      return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedListController = ref.read(selectedListProvider.notifier);
@@ -38,6 +53,7 @@ class _SideBarListWidgetState extends ConsumerState<SideBarListWidget> {
         _hovered = value;
       }),
       child: Container(
+        height: 40,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
@@ -63,6 +79,38 @@ class _SideBarListWidgetState extends ConsumerState<SideBarListWidget> {
                 color: widget.isActive ? theme.textC : theme.secTextC,
               ),
             ),
+            const Spacer(),
+            if (_hovered || _isMobile) ...[
+              Transform.scale(
+                scale: 0.8,
+                child: InkButton(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AddListDialog(list: widget.list);
+                      },
+                    );
+                  },
+                  backC: Colors.transparent,
+                  textC: theme.mainC,
+                  hoverBackC: Colors.transparent,
+                  icon: Icons.edit_outlined,
+                  padding: EdgeInsets.zero,
+                ),
+              ),
+              Transform.scale(
+                scale: 0.8,
+                child: InkButton(
+                  onTap: () {},
+                  backC: Colors.transparent,
+                  textC: theme.errorC,
+                  hoverBackC: Colors.transparent,
+                  icon: Icons.delete_outline,
+                  padding: EdgeInsets.zero,
+                ),
+              ),
+            ],
           ],
         ),
       ),

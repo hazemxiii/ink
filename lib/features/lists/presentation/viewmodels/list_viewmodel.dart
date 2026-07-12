@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
+import 'package:ink/features/lists/domain/usecases/delete_list.dart';
 import 'package:ink/features/lists/domain/usecases/get_list.dart';
 import 'package:ink/features/lists/domain/usecases/update_list.dart';
 import 'package:ink/features/notes/data/models/note.dart';
@@ -22,6 +23,10 @@ class ListViewmodel extends StreamNotifier<InkList> {
     final updateList = ref.read(updateListProvider);
     await updateList(list);
     state = AsyncValue.data(list.copyWith(notes: state.value!.notes));
+  }
+
+  Future<void> deleteList({String? moveToListId}) async {
+    await ref.read(deleteListProvider)(id, moveToId: moveToListId);
   }
 
   Future<String> createNote() async {
@@ -54,15 +59,12 @@ class ListViewmodel extends StreamNotifier<InkList> {
       ),
     );
   }
-  
+
   Future<void> deleteNote(String noteId) async {
-    final deleteNote = ref.read(deleteNoteProvider); 
-    await deleteNote(noteId);
+    await ref.read(deleteNoteProvider)(noteId);
     state = AsyncValue.data(
       state.value!.copyWith(
-        notes: state.value!.notes
-            .where((e) => e.id != noteId)
-            .toList(),
+        notes: state.value!.notes.where((e) => e.id != noteId).toList(),
       ),
     );
   }

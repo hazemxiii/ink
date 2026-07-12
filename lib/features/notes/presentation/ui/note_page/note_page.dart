@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/core/enums/loading_state.dart';
+import 'package:ink/core/services/ink_toast_service.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/text_input.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
@@ -30,6 +31,7 @@ class _NoteDialogState extends ConsumerState<NotePage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   late Note _note;
+  late InkToastService _toastService;
   LoadingState _loadingState = LoadingState.done;
   bool _pendingSave = false;
   Timer? _debounce;
@@ -39,6 +41,7 @@ class _NoteDialogState extends ConsumerState<NotePage> {
     _initEmptyNote();
     _titleController.text = widget._note.title;
     _contentController.text = widget._note.content;
+    _toastService = ref.read(inkToastServiceProvider);
   }
 
   @override
@@ -94,7 +97,11 @@ class _NoteDialogState extends ConsumerState<NotePage> {
             noBorder: true,
           ),
           const Spacer(),
-          NoteFooter(note: _note, loadingState: _loadingState, list: widget.list),
+          NoteFooter(
+            note: _note,
+            loadingState: _loadingState,
+            list: widget.list,
+          ),
         ],
       ),
     );
@@ -122,6 +129,7 @@ class _NoteDialogState extends ConsumerState<NotePage> {
   }
 
   Future<void> _createNewNote() async {
+    final theme = ref.watch(themeViewmodelProvider);
     try {
       final id = await ref
           .read(listViewmodelProvider(widget.list.id).notifier)
@@ -129,9 +137,15 @@ class _NoteDialogState extends ConsumerState<NotePage> {
       _note = _note.copyWith(id: id);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
+      setState(() {
+        _loadingState = LoadingState.error;
+      });
+      _toastService.showErrorToast(
         context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+        theme,
+        "Error creating note",
+        e.toString(),
+      );
     }
   }
 

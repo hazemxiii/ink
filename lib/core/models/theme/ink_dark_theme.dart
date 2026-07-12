@@ -20,4 +20,7 @@ class InkDarkTheme extends InkTheme {
 
   @override
   Color get textC => const Color(0xFFF4F4F6);
+
+  @override
+  Color get errorC => const Color(0xFFFF007A);
 }

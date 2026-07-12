@@ -15,6 +15,7 @@ class InkButton extends ConsumerStatefulWidget {
     this.borderC,
     this.hoverBorderC,
     this.isLoading = false,
+    this.padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
   });
   final VoidCallback onTap;
   final String? text;
@@ -27,6 +28,7 @@ class InkButton extends ConsumerStatefulWidget {
   final Color? hoverTextC;
   final Color? hoverBorderC;
   final bool isLoading;
+  final EdgeInsets padding;
 
   @override
   ConsumerState<InkButton> createState() => _InkButtonState();
@@ -53,7 +55,7 @@ class _InkButtonState extends ConsumerState<InkButton> {
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: widget.padding,
         decoration: BoxDecoration(
           color: backC,
           borderRadius: BorderRadius.circular(8),

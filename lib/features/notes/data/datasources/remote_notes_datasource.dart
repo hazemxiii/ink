@@ -28,9 +28,9 @@ class RemoteNotesDatasource extends NotesDatasource {
       throw InkException("Unexpected Error");
     }
   }
-  
+
   @override
-  Future<void> delete(String noteId) async{
+  Future<void> delete(String noteId) async {
     return await apiService.delete("notes/$noteId");
   }
 }

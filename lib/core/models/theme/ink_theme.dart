@@ -9,4 +9,5 @@ abstract class InkTheme {
   Color get secTextC;
   Color get boxesBackC;
   Color get borderC;
+  Color get errorC;
 }

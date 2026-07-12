@@ -11,7 +11,7 @@ class SelectedListViewModel extends AsyncNotifier<String?> {
     return id;
   }
 
-  Future<void> selectList(String id) async {
+  Future<void> selectList(String? id) async {
     state = AsyncValue.data(id);
     await prefs.setStartupList(id);
   }

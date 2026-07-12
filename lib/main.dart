@@ -5,6 +5,10 @@ import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/ink_sidebar/ink_sidebar.dart';
 import 'package:ink/features/lists/presentation/ui/list_page/list_page.dart';
 
+/* 
+https://lovable.dev/preview/1agK9Ftxb1rq0QEjVNEx8ifoo2zgQ3jt
+*/
+
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }

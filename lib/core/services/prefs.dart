@@ -8,7 +8,11 @@ class Prefs {
   }
   late SharedPreferencesAsync prefs;
 
-  Future<void> setStartupList(String id) async {
+  Future<void> setStartupList(String? id) async {
+    if (id == null) {
+      await prefs.remove('startup_list');
+      return;
+    }
     await prefs.setString('startup_list', id);
   }
 

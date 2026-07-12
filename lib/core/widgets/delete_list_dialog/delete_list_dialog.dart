@@ -8,6 +8,7 @@ import 'package:ink/core/widgets/ink_button.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/presentation/viewmodels/list_viewmodel.dart';
 import 'package:ink/features/lists/presentation/viewmodels/lists_viewmodel.dart';
+import 'package:ink/features/lists/presentation/viewmodels/selected_list_viewmodel.dart';
 
 class DeleteListDialog extends ConsumerStatefulWidget {
   const DeleteListDialog({super.key, required this.listId});
@@ -36,6 +37,9 @@ class _DeleteListDialogState extends ConsumerState<DeleteListDialog> {
     _moveToLists = _listsState.value!
         .where((list) => list.id != widget.listId)
         .toList();
+    if (_moveToLists.isEmpty) {
+      _isDeleteSelected = true;
+    }
     _moveToListId = _moveToLists.firstOrNull?.id;
     _theme = ref.watch(themeViewmodelProvider);
     super.initState();
@@ -47,7 +51,7 @@ class _DeleteListDialogState extends ConsumerState<DeleteListDialog> {
       backgroundColor: _theme.backC,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       title: Text(
-        'Delete List ${_listState.value!.name}',
+        'Delete List "${_listState.value!.name}"',
         style: TextStyle(color: _theme.textC),
       ),
       content: Column(
@@ -64,32 +68,33 @@ class _DeleteListDialogState extends ConsumerState<DeleteListDialog> {
                   'This list has ${_listState.value!.notes.length} notes. What would you like to do?',
                   style: TextStyle(color: _theme.secTextC),
                 ),
-
-          DeleteListItemWidget(
-            isDelete: true,
-            onTap: () {
-              setState(() {
-                _isDeleteSelected = true;
-              });
-            },
-            isActive: _isDeleteSelected,
-          ),
-          DeleteListItemWidget(
-            isDelete: false,
-            onTap: () {
-              setState(() {
-                _isDeleteSelected = false;
-              });
-            },
-            isActive: !_isDeleteSelected,
-            listId: _moveToListId,
-            moveToLists: _moveToLists,
-            onMoveToListTap: (listId) {
-              setState(() {
-                _moveToListId = listId;
-              });
-            },
-          ),
+          if (!_isEmpty) ...[
+            DeleteListItemWidget(
+              isDelete: true,
+              onTap: () {
+                setState(() {
+                  _isDeleteSelected = true;
+                });
+              },
+              isActive: _isDeleteSelected,
+            ),
+            DeleteListItemWidget(
+              isDelete: false,
+              onTap: () {
+                setState(() {
+                  _isDeleteSelected = false;
+                });
+              },
+              isActive: !_isDeleteSelected,
+              listId: _moveToListId,
+              moveToLists: _moveToLists,
+              onMoveToListTap: (listId) {
+                setState(() {
+                  _moveToListId = listId;
+                });
+              },
+            ),
+          ],
         ],
       ),
       actions: [
@@ -99,11 +104,22 @@ class _DeleteListDialogState extends ConsumerState<DeleteListDialog> {
         ),
         InkButton(
           isMinWidth: true,
-          backC: _theme.errorC,
+          backC: _isDeleteSelected ? _theme.errorC : _theme.mainC,
           textC: _theme.textC,
+          text: _isDeleteSelected ? "Delete" : "Move & Delete",
           onTap: () async {
             try {
-              await _listController.deleteList();
+              await _listController.deleteList(
+                moveToListId: _isDeleteSelected ? null : _moveToListId,
+              );
+              final selectedListState = ref.read(selectedListProvider);
+              if (selectedListState.value == _listController.id) {
+                ref
+                    .read(selectedListProvider.notifier)
+                    .selectList(_moveToListId ?? _moveToLists.firstOrNull?.id);
+              }
+              ref.invalidate(listsViewmodelProvider);
+              ref.invalidate(listViewmodelProvider(_moveToListId!));
               if (!context.mounted) return;
               Navigator.pop(context);
             } catch (e) {
@@ -118,7 +134,6 @@ class _DeleteListDialogState extends ConsumerState<DeleteListDialog> {
                   );
             }
           },
-          text: "Delete",
         ),
       ],
     );

@@ -7,10 +7,20 @@ import 'package:ink/features/notes/presentation/ui/note_page/note_page.dart';
 import 'package:intl/intl.dart';
 
 class NoteWidget extends ConsumerStatefulWidget {
-  const NoteWidget({super.key, required this.note, required this.list});
+  const NoteWidget({
+    super.key,
+    required this.note,
+    required this.list,
+    required this.onSelectionChanged,
+    required this.isSelected,
+    required this.isSelecting,
+  });
 
   final Note note;
   final InkList list;
+  final Function(String noteId) onSelectionChanged;
+  final bool isSelected;
+  final bool isSelecting;
 
   @override
   ConsumerState<NoteWidget> createState() => _NoteWidgetState();
@@ -47,7 +57,16 @@ class _NoteWidgetState extends ConsumerState<NoteWidget>
       hoverColor: Colors.transparent,
       highlightColor: Colors.transparent,
       splashColor: Colors.transparent,
+      onLongPress: widget.isSelecting
+          ? null
+          : () {
+              widget.onSelectionChanged(widget.note.id);
+            },
       onTap: () {
+        if (widget.isSelecting) {
+          widget.onSelectionChanged(widget.note.id);
+          return;
+        }
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) {
@@ -69,11 +88,13 @@ class _NoteWidgetState extends ConsumerState<NoteWidget>
           color: theme.boxesBackC,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Color.lerp(
-              theme.borderC,
-              theme.textC,
-              _hoverAnimation.value,
-            )!,
+            color: widget.isSelected
+                ? theme.mainC
+                : Color.lerp(
+                    theme.borderC,
+                    theme.textC,
+                    _hoverAnimation.value,
+                  )!,
           ),
         ),
         child: Column(
@@ -87,6 +108,19 @@ class _NoteWidgetState extends ConsumerState<NoteWidget>
                   DateFormat("MMM d, yyyy").format(widget.note.createdAt),
                   style: TextStyle(color: theme.secTextC),
                 ),
+                if (widget.isSelecting) ...[
+                  const Spacer(),
+                  Checkbox(
+                    activeColor: theme.mainC,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    value: widget.isSelected,
+                    onChanged: (value) {
+                      widget.onSelectionChanged(widget.note.id);
+                    },
+                  ),
+                ],
               ],
             ),
             const SizedBox(height: 16),

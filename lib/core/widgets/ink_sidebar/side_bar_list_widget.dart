@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
+import 'package:ink/core/widgets/delete_list_dialog/delete_list_dialog.dart';
 import 'package:ink/core/widgets/ink_button.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/presentation/ui/add_list_dialog/add_list_dialog.dart';
@@ -102,7 +103,14 @@ class _SideBarListWidgetState extends ConsumerState<SideBarListWidget> {
               Transform.scale(
                 scale: 0.8,
                 child: InkButton(
-                  onTap: () {},
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return DeleteListDialog(listId: widget.list.id);
+                      },
+                    );
+                  },
                   backC: Colors.transparent,
                   textC: theme.errorC,
                   hoverBackC: Colors.transparent,

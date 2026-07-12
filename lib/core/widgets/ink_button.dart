@@ -8,6 +8,7 @@ class InkButton extends ConsumerStatefulWidget {
     this.text,
     this.icon,
     this.isCentered = true,
+    this.isMinWidth = false,
     required this.backC,
     required this.textC,
     this.hoverBackC,
@@ -21,6 +22,7 @@ class InkButton extends ConsumerStatefulWidget {
   final String? text;
   final IconData? icon;
   final bool isCentered;
+  final bool isMinWidth;
   final Color backC;
   final Color textC;
   final Color? borderC;
@@ -66,6 +68,7 @@ class _InkButtonState extends ConsumerState<InkButton> {
           ),
         ),
         child: Row(
+          mainAxisSize: widget.isMinWidth ? MainAxisSize.min : MainAxisSize.max,
           mainAxisAlignment: widget.isCentered
               ? MainAxisAlignment.center
               : MainAxisAlignment.start,

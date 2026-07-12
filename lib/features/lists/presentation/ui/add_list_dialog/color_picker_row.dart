@@ -23,7 +23,7 @@ class _ColorPickerRowState extends ConsumerState<ColorPickerRow> {
     Colors.red,
     Colors.green,
     Colors.blue,
-    Colors.pink,
+    const Color(0xFFFF007F),
   ];
   Color? _customColor;
 

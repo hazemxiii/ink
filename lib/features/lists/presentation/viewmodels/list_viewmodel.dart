@@ -6,6 +6,7 @@ import 'package:ink/features/lists/domain/usecases/delete_list.dart';
 import 'package:ink/features/lists/domain/usecases/get_list.dart';
 import 'package:ink/features/lists/domain/usecases/update_list.dart';
 import 'package:ink/features/notes/data/models/note.dart';
+import 'package:ink/features/notes/domain/usecases/bulk_delete_notes.dart';
 import 'package:ink/features/notes/domain/usecases/create_note.dart';
 import 'package:ink/features/notes/domain/usecases/delete_note.dart';
 import 'package:ink/features/notes/domain/usecases/update_note.dart';
@@ -67,6 +68,20 @@ class ListViewmodel extends StreamNotifier<InkList> {
         notes: state.value!.notes.where((e) => e.id != noteId).toList(),
       ),
     );
+  }
+
+  Future<Map<String, dynamic>> bulkDeleteNotes(List<String> noteIds) async {
+    final bulkDeleteNotes = ref.read(bulkDeleteNotesProvider);
+    final result = await bulkDeleteNotes(noteIds);
+    final success = List<String>.from(result['deletedNotes'] ?? []);
+    state = AsyncValue.data(
+      state.value!.copyWith(
+        notes: state.value!.notes
+            .where((e) => !success.contains(e.id))
+            .toList(),
+      ),
+    );
+    return result;
   }
 }
 

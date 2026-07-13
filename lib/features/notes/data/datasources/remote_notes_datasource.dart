@@ -33,6 +33,21 @@ class RemoteNotesDatasource extends NotesDatasource {
   Future<void> delete(String noteId) async {
     return await apiService.delete("notes/$noteId");
   }
+
+  @override
+  Future<Map<String, dynamic>> bulkDelete(List<String> noteIds) async {
+    final response = await apiService.post("notes/bulk-delete", {
+      "ids": noteIds,
+    });
+    final result = response as Map<String, dynamic>;
+    try {
+      return result;
+    } catch (e) {
+      debugPrint(e.toString());
+      debugPrintStack();
+      throw InkException("Unexpected Error");
+    }
+  }
 }
 
 final remoteNotesDatasourceProvider = Provider<NotesDatasource>(

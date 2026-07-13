@@ -7,6 +7,7 @@ abstract class NotesRepository {
   Future<String> create(String listId);
   Future<Note> update(Note note);
   Future<void> delete(String noteId);
+  Future<Map<String, dynamic>> bulkDelete(List<String> noteIds);
 }
 
 final notesRepositoryProvider = Provider<NotesRepository>(

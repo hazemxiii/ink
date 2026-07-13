@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/core/models/select_option_item.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 
-class SelectOptionsWidget extends ConsumerWidget {
+class SelectOptionsWidget extends ConsumerStatefulWidget {
   const SelectOptionsWidget({
     super.key,
     required this.selectedCount,
@@ -15,7 +15,14 @@ class SelectOptionsWidget extends ConsumerWidget {
   final VoidCallback onCancel;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SelectOptionsWidget> createState() =>
+      _SelectOptionsWidgetState();
+}
+
+class _SelectOptionsWidgetState extends ConsumerState<SelectOptionsWidget> {
+  bool _isLoading = false;
+  @override
+  Widget build(BuildContext context) {
     final theme = ref.watch(themeViewmodelProvider);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -28,7 +35,7 @@ class SelectOptionsWidget extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '$selectedCount selected',
+            '${widget.selectedCount} selected',
             style: TextStyle(color: theme.secTextC),
           ),
           const SizedBox(width: 4),
@@ -38,14 +45,22 @@ class SelectOptionsWidget extends ConsumerWidget {
           ),
           const SizedBox(width: 4),
           IgnorePointer(
-            ignoring: selectedCount == 0,
+            ignoring: widget.selectedCount == 0,
             child: Opacity(
-              opacity: selectedCount == 0 ? 0.5 : 1.0,
+              opacity: widget.selectedCount == 0 ? 0.5 : 1.0,
               child: Row(
                 children: [
-                  ...options.map(
+                  ...widget.options.map(
                     (option) => IconButton(
-                      onPressed: option.onTap,
+                      onPressed: () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        await option.onTap();
+                        setState(() {
+                          _isLoading = false;
+                        });
+                      },
                       icon: Row(
                         mainAxisSize: MainAxisSize.min,
                         spacing: 3,
@@ -63,10 +78,20 @@ class SelectOptionsWidget extends ConsumerWidget {
               ),
             ),
           ),
-          IconButton(
-            onPressed: onCancel,
-            icon: Icon(Icons.close, color: theme.mainC),
-          ),
+          if (_isLoading)
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: theme.mainC,
+              ),
+            )
+          else
+            IconButton(
+              onPressed: widget.onCancel,
+              icon: Icon(Icons.close, color: theme.mainC),
+            ),
         ],
       ),
     );

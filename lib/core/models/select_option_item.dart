@@ -10,5 +10,5 @@ class SelectOptionItem {
   final String text;
   final IconData icon;
   final Color color;
-  final VoidCallback onTap;
+  final Future<void> Function() onTap;
 }

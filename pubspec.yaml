@@ -41,9 +41,12 @@ dependencies:
   http: ^1.6.0
   shimmer: ^3.0.0
   fpdart: ^1.2.0
-  intl: ^0.20.3
+  intl: 0.20.2
   flex_color_picker: ^3.8.0
   toastification: ^3.2.0
+  flutter_quill: ^11.5.1
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

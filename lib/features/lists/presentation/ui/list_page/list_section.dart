@@ -9,6 +9,7 @@ import 'package:ink/core/widgets/ink_button.dart';
 import 'package:ink/core/widgets/select_options_widget.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/presentation/ui/list_page/list_header_widget.dart';
+import 'package:ink/features/lists/presentation/ui/list_page/move_to_list_dialog.dart';
 import 'package:ink/features/lists/presentation/ui/list_page/note_widget.dart';
 import 'package:ink/features/lists/presentation/viewmodels/list_viewmodel.dart';
 import 'package:ink/features/notes/data/models/note.dart';
@@ -121,8 +122,15 @@ class _ListSectionState extends ConsumerState<ListSection> {
                   icon: Icons.folder_outlined,
                   text: 'Move',
                   color: _theme.textC,
-                  onTap: () {
-                    // TODO: Implement move functionality
+                  onTap: () async {
+                    final listId = await showDialog<String>(
+                      context: context,
+                      builder: (context) =>
+                          MoveToListDialog(listId: widget.list.id),
+                    );
+                    if (listId != null) {
+                      await moveNotes(listId);
+                    }
                   },
                 ),
                 SelectOptionItem(
@@ -164,6 +172,39 @@ class _ListSectionState extends ConsumerState<ListSection> {
               ConfirmDialog(title: title, isDanger: isDanger, content: content),
         ) ??
         false;
+  }
+
+  Future<void> moveNotes(String targetListId) async {
+    try {
+      final result = await _listController.move(
+        _selectedNotesIds.toList(),
+        targetListId,
+      );
+      if (!mounted) return;
+      final failedNotes = result['failedNotes'] ?? [];
+      for (var note in failedNotes) {
+        final noteId = note['id'];
+        final reason = note['reason'];
+        ref
+            .read(inkToastServiceProvider)
+            .showErrorToast(
+              context,
+              _theme,
+              'Error moving note $noteId',
+              reason,
+            );
+      }
+      ref.invalidate(listViewmodelProvider(targetListId));
+    } catch (e) {
+      ref
+          .read(inkToastServiceProvider)
+          .showErrorToast(context, _theme, 'Error moving notes', e.toString());
+    } finally {
+      setState(() {
+        _isSelecting = false;
+        _selectedNotesIds.clear();
+      });
+    }
   }
 
   Future<void> deleteNotes() async {

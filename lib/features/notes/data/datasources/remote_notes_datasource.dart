@@ -48,6 +48,25 @@ class RemoteNotesDatasource extends NotesDatasource {
       throw InkException("Unexpected Error");
     }
   }
+
+  @override
+  Future<Map<String, dynamic>> move(
+    List<String> noteIds,
+    String newListId,
+  ) async {
+    final response = await apiService.post("notes/move", {
+      "ids": noteIds,
+      "listId": newListId,
+    });
+    final result = response as Map<String, dynamic>;
+    try {
+      return result;
+    } catch (e) {
+      debugPrint(e.toString());
+      debugPrintStack();
+      throw InkException("Unexpected Error");
+    }
+  }
 }
 
 final remoteNotesDatasourceProvider = Provider<NotesDatasource>(

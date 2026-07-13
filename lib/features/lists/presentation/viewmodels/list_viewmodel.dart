@@ -9,6 +9,7 @@ import 'package:ink/features/notes/data/models/note.dart';
 import 'package:ink/features/notes/domain/usecases/bulk_delete_notes.dart';
 import 'package:ink/features/notes/domain/usecases/create_note.dart';
 import 'package:ink/features/notes/domain/usecases/delete_note.dart';
+import 'package:ink/features/notes/domain/usecases/move_notes.dart';
 import 'package:ink/features/notes/domain/usecases/update_note.dart';
 
 class ListViewmodel extends StreamNotifier<InkList> {
@@ -74,6 +75,23 @@ class ListViewmodel extends StreamNotifier<InkList> {
     final bulkDeleteNotes = ref.read(bulkDeleteNotesProvider);
     final result = await bulkDeleteNotes(noteIds);
     final success = List<String>.from(result['deletedNotes'] ?? []);
+    state = AsyncValue.data(
+      state.value!.copyWith(
+        notes: state.value!.notes
+            .where((e) => !success.contains(e.id))
+            .toList(),
+      ),
+    );
+    return result;
+  }
+
+  Future<Map<String, dynamic>> move(
+    List<String> noteIds,
+    String newListId,
+  ) async {
+    final moveNotes = ref.read(moveNotesProvider);
+    final result = await moveNotes(noteIds, newListId);
+    final success = List<String>.from(result['movedNotes'] ?? []);
     state = AsyncValue.data(
       state.value!.copyWith(
         notes: state.value!.notes

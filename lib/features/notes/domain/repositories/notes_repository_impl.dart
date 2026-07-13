@@ -24,4 +24,12 @@ class NotesRepositoryImpl implements NotesRepository {
   Future<Map<String, dynamic>> bulkDelete(List<String> noteIds) async {
     return await remoteNotesDatasource.bulkDelete(noteIds);
   }
+
+  @override
+  Future<Map<String, dynamic>> move(
+    List<String> noteIds,
+    String newListId,
+  ) async {
+    return await remoteNotesDatasource.move(noteIds, newListId);
+  }
 }

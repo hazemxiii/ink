@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/core/models/select_option_item.dart';
-import 'package:ink/core/models/theme/ink_theme.dart';
 import 'package:ink/core/services/ink_toast_service.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/confirm_dialog.dart';
@@ -27,17 +26,15 @@ class _ListSectionState extends ConsumerState<ListSection> {
   bool _isSelecting = false;
   final Set<String> _selectedNotesIds = {};
   late final ListViewmodel _listController;
-  late final InkTheme _theme;
   @override
   void initState() {
     _listController = ref.read(listViewmodelProvider(widget.list.id).notifier);
-    _theme = ref.watch(themeViewmodelProvider);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final theme = ref.watch(themeViewmodelProvider);
+    final theme = ref.watch(themeViewmodelProvider);
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -53,7 +50,7 @@ class _ListSectionState extends ConsumerState<ListSection> {
                   Text(
                     "Notes",
                     style: TextStyle(
-                      color: _theme.textC,
+                      color: theme.textC,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -72,8 +69,8 @@ class _ListSectionState extends ConsumerState<ListSection> {
                         ),
                       );
                     },
-                    backC: _theme.mainC,
-                    textC: _theme.textC,
+                    backC: theme.mainC,
+                    textC: theme.textC,
                     text: "New Note",
                     icon: Icons.add,
                   ),
@@ -121,7 +118,7 @@ class _ListSectionState extends ConsumerState<ListSection> {
                 SelectOptionItem(
                   icon: Icons.folder_outlined,
                   text: 'Move',
-                  color: _theme.textC,
+                  color: theme.textC,
                   onTap: () async {
                     final listId = await showDialog<String>(
                       context: context,
@@ -136,7 +133,7 @@ class _ListSectionState extends ConsumerState<ListSection> {
                 SelectOptionItem(
                   icon: Icons.delete_outlined,
                   text: 'Delete',
-                  color: _theme.errorC,
+                  color: theme.errorC,
                   onTap: () async {
                     final confirmed = await confirmOperation(
                       title: 'Delete Notes',
@@ -175,6 +172,7 @@ class _ListSectionState extends ConsumerState<ListSection> {
   }
 
   Future<void> moveNotes(String targetListId) async {
+    final theme = ref.read(themeViewmodelProvider);
     try {
       final result = await _listController.move(
         _selectedNotesIds.toList(),
@@ -189,7 +187,7 @@ class _ListSectionState extends ConsumerState<ListSection> {
             .read(inkToastServiceProvider)
             .showErrorToast(
               context,
-              _theme,
+              theme,
               'Error moving note $noteId',
               reason,
             );
@@ -198,7 +196,7 @@ class _ListSectionState extends ConsumerState<ListSection> {
     } catch (e) {
       ref
           .read(inkToastServiceProvider)
-          .showErrorToast(context, _theme, 'Error moving notes', e.toString());
+          .showErrorToast(context, theme, 'Error moving notes', e.toString());
     } finally {
       setState(() {
         _isSelecting = false;
@@ -208,6 +206,8 @@ class _ListSectionState extends ConsumerState<ListSection> {
   }
 
   Future<void> deleteNotes() async {
+    final theme = ref.read(themeViewmodelProvider);
+
     try {
       final result = await _listController.bulkDeleteNotes(
         _selectedNotesIds.toList(),
@@ -221,7 +221,7 @@ class _ListSectionState extends ConsumerState<ListSection> {
             .read(inkToastServiceProvider)
             .showErrorToast(
               context,
-              _theme,
+              theme,
               'Error deleting note $noteId',
               reason,
             );
@@ -229,12 +229,7 @@ class _ListSectionState extends ConsumerState<ListSection> {
     } catch (e) {
       ref
           .read(inkToastServiceProvider)
-          .showErrorToast(
-            context,
-            _theme,
-            'Error deleting notes',
-            e.toString(),
-          );
+          .showErrorToast(context, theme, 'Error deleting notes', e.toString());
     } finally {
       setState(() {
         _isSelecting = false;

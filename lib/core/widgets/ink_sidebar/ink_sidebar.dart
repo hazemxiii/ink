@@ -97,8 +97,8 @@ class _InkSidebarState extends ConsumerState<InkSidebar> {
               icon: themeController.isDark
                   ? Icons.light_mode_outlined
                   : Icons.dark_mode_outlined,
-              backC: theme.backC,
-              textC: theme.secTextC,
+              backC: theme.textC,
+              textC: theme.backC,
               borderC: theme.borderC,
               // hoverTextC: theme.mainC,
               hoverBorderC: theme.mainC,

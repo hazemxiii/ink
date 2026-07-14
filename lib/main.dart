@@ -23,27 +23,25 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class _MyAppState extends ConsumerState<MyApp> {
+  late final GoRouter router;
+
   @override
-  Widget build(BuildContext context) {
-    final theme = ref.watch(themeViewmodelProvider);
-    final router = GoRouter(
+  void initState() {
+    super.initState();
+    router = GoRouter(
       routes: [
         ShellRoute(
-          builder: (context, state, child) => Scaffold(
-            backgroundColor: theme.backC,
-            appBar: AppBar(
-              backgroundColor: theme.backC,
-              foregroundColor: theme.textC,
-            ),
-            drawer: const InkSidebar(),
-            body: child,
-          ),
+          builder: (context, state, child) => Home(child: child),
           routes: [
             GoRoute(path: "/", builder: (context, state) => const ListPage()),
           ],
         ),
       ],
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp.router(
       routerConfig: router,
       localizationsDelegates: const [
@@ -57,10 +55,20 @@ class _MyAppState extends ConsumerState<MyApp> {
 }
 
 class Home extends ConsumerWidget {
-  const Home({super.key});
+  final Widget child;
+  const Home({super.key, required this.child});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const Placeholder();
+    final theme = ref.watch(themeViewmodelProvider);
+    return Scaffold(
+      backgroundColor: theme.backC,
+      appBar: AppBar(
+        backgroundColor: theme.backC,
+        foregroundColor: theme.textC,
+      ),
+      drawer: const InkSidebar(),
+      body: child,
+    );
   }
 }

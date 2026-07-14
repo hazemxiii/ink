@@ -8,18 +8,24 @@ import 'package:ink/features/lists/presentation/ui/add_list_dialog/add_list_dial
 import 'package:ink/features/lists/presentation/viewmodels/lists_viewmodel.dart';
 import 'package:ink/features/lists/presentation/viewmodels/selected_list_viewmodel.dart';
 
-class InkSidebar extends ConsumerWidget {
+class InkSidebar extends ConsumerStatefulWidget {
   const InkSidebar({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<InkSidebar> createState() => _InkSidebarState();
+}
+
+class _InkSidebarState extends ConsumerState<InkSidebar> {
+  @override
+  Widget build(BuildContext context) {
     final theme = ref.watch(themeViewmodelProvider);
+    final themeController = ref.read(themeViewmodelProvider.notifier);
     final listsVieModel = ref.watch(listsViewmodelProvider);
     final selectedList = ref.watch(selectedListProvider);
     return RefreshIndicator(
-      onRefresh: () async { 
+      onRefresh: () async {
         ref.invalidate(listsViewmodelProvider);
-       },
+      },
       child: Container(
         padding: const EdgeInsets.all(16),
         width: 300,
@@ -78,6 +84,19 @@ class InkSidebar extends ConsumerWidget {
               },
               text: "New list",
               icon: Icons.add,
+              backC: theme.backC,
+              textC: theme.secTextC,
+              borderC: theme.borderC,
+              // hoverTextC: theme.mainC,
+              hoverBorderC: theme.mainC,
+            ),
+            const SizedBox(height: 5),
+            InkButton(
+              onTap: themeController.toggleTheme,
+              text: themeController.isDark ? "Light" : "Dark",
+              icon: themeController.isDark
+                  ? Icons.light_mode_outlined
+                  : Icons.dark_mode_outlined,
               backC: theme.backC,
               textC: theme.secTextC,
               borderC: theme.borderC,

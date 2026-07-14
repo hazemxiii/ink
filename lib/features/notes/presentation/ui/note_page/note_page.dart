@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/flutter_quill.dart' hide Text;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/core/enums/loading_state.dart';
-import 'package:ink/core/models/rich_text_editor.dart';
 import 'package:ink/core/services/ink_toast_service.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/text_input.dart';
@@ -29,11 +27,9 @@ class NotePage extends ConsumerStatefulWidget {
   ConsumerState<NotePage> createState() => _NoteDialogState();
 }
 
-// TODO rich editor
 class _NoteDialogState extends ConsumerState<NotePage> {
   final TextEditingController _titleController = TextEditingController();
-  late final TextEditingController _contentController;
-  final _controller = QuillController.basic();
+  final TextEditingController _contentController = TextEditingController();
   late Note _note;
   late InkToastService _toastService;
   LoadingState _loadingState = LoadingState.done;
@@ -44,15 +40,7 @@ class _NoteDialogState extends ConsumerState<NotePage> {
     super.initState();
     _initEmptyNote();
     _titleController.text = widget._note.title;
-    _controller.addListener(() {
-      print(_controller.document.toDelta().toJson());
-      print("=============");
-    });
-    _contentController = RichTextEditingController(text: widget._note.content);
-    _contentController.addListener(() {
-      _note = _note.copyWith(content: _contentController.text);
-      _updateNote();
-    });
+    _contentController.text = widget._note.content;
     _toastService = ref.read(inkToastServiceProvider);
   }
 
@@ -97,15 +85,21 @@ class _NoteDialogState extends ConsumerState<NotePage> {
             hint: "Title",
             noBorder: true,
           ),
-
-          // RichTextEditor(
-          //   controller: RichTextEditingController(text: widget._note.content),
-          // ),
-          QuillSimpleToolbar(
-            controller: _controller,
-            config: QuillSimpleToolbarConfig(color: theme.mainC),
+          Expanded(
+            child: TextInput(
+              maxLines: null,
+              onChanged: (_) {
+                setState(() {
+                  _note = _note.copyWith(content: _contentController.text);
+                });
+                _updateNote();
+              },
+              controller: _contentController,
+              hint: "Type something...",
+              noBorder: true,
+            ),
           ),
-          Expanded(child: QuillEditor.basic(controller: _controller)),
+
           NoteFooter(
             note: _note,
             loadingState: _loadingState,

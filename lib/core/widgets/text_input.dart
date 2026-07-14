@@ -18,6 +18,7 @@ class TextInput extends ConsumerWidget {
     this.textInputAction,
     this.noBorder = false,
     this.onChanged,
+    this.maxLines = 1,
   });
 
   final bool isOutlined;
@@ -33,6 +34,7 @@ class TextInput extends ConsumerWidget {
   final TextInputAction? textInputAction;
   final bool noBorder;
   final ValueChanged<String>? onChanged;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -66,6 +68,7 @@ class TextInput extends ConsumerWidget {
       );
     }
     return TextField(
+      maxLines: maxLines,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
       textInputAction: textInputAction,

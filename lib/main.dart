@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ink/core/services/hive_service.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/ink_sidebar/ink_sidebar.dart';
 import 'package:ink/features/lists/presentation/ui/list_page/list_page.dart';
@@ -11,7 +12,8 @@ import 'package:ink/features/lists/presentation/ui/list_page/list_page.dart';
 https://lovable.dev/preview/1agK9Ftxb1rq0QEjVNEx8ifoo2zgQ3jt
 */
 
-void main() {
+void main() async {
+  await HiveService.init();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -55,8 +57,8 @@ class _MyAppState extends ConsumerState<MyApp> {
 }
 
 class Home extends ConsumerWidget {
-  final Widget child;
   const Home({super.key, required this.child});
+  final Widget child;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

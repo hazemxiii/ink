@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ink/core/services/ink_toast_service.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/ink_button.dart';
 import 'package:ink/core/widgets/ink_logo.dart';
@@ -16,6 +17,13 @@ class InkSidebar extends ConsumerStatefulWidget {
 }
 
 class _InkSidebarState extends ConsumerState<InkSidebar> {
+  late final InkToastService _toastService;
+  @override
+  void initState() {
+    super.initState();
+    _toastService = ref.read(inkToastServiceProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeViewmodelProvider);
@@ -61,16 +69,32 @@ class _InkSidebarState extends ConsumerState<InkSidebar> {
                   "Error: $error",
                   style: TextStyle(color: theme.secTextC),
                 ),
-                data: (lists) {
+                data: (data) {
+                  final lists = data.lists;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (data.error != null && context.mounted) {
+                      _toastService.showErrorToast(
+                        context,
+                        theme,
+                        "Error getting lists (data may be inaccurate)",
+                        data.error!,
+                      );
+                    }
+                  });
                   return ListView.builder(
-                    itemCount: lists.length,
-                    itemBuilder: (context, index) => Container(
-                      margin: const EdgeInsets.only(bottom: 5),
-                      child: SideBarListWidget(
-                        list: lists[index],
-                        isActive: selectedList.value == lists[index].id,
-                      ),
-                    ),
+                    itemCount: lists.length + (data.done ? 0 : 1),
+                    itemBuilder: (context, index) {
+                      if (index == lists.length) {
+                        return SideBarListWidget.shimmer();
+                      }
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 5),
+                        child: SideBarListWidget(
+                          list: lists[index],
+                          isActive: selectedList.value == lists[index].id,
+                        ),
+                      );
+                    },
                   );
                 },
               ),

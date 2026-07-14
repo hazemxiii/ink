@@ -6,6 +6,7 @@ import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/delete_list_dialog/delete_list_item_widget.dart';
 import 'package:ink/core/widgets/ink_button.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
+import 'package:ink/features/lists/domain/repositories/lists_repository.dart';
 import 'package:ink/features/lists/presentation/viewmodels/list_viewmodel.dart';
 import 'package:ink/features/lists/presentation/viewmodels/lists_viewmodel.dart';
 import 'package:ink/features/lists/presentation/viewmodels/selected_list_viewmodel.dart';
@@ -22,7 +23,7 @@ class _DeleteListDialogState extends ConsumerState<DeleteListDialog> {
   late final ListViewmodel _listController;
   late final AsyncValue<InkList> _listState;
   late final List<InkList> _moveToLists;
-  late final AsyncValue<List<InkList>> _listsState;
+  late final AsyncValue<WatchListsStreamData> _listsState;
   late final InkTheme _theme;
   late final bool _isEmpty;
   bool _isDeleteSelected = false;
@@ -34,7 +35,7 @@ class _DeleteListDialogState extends ConsumerState<DeleteListDialog> {
     _listState = ref.watch(listViewmodelProvider(widget.listId));
     _listsState = ref.watch(listsViewmodelProvider);
     _isEmpty = _listState.value!.notes.isEmpty;
-    _moveToLists = _listsState.value!
+    _moveToLists = (_listsState.value?.lists ?? [])
         .where((list) => list.id != widget.listId)
         .toList();
     if (_moveToLists.isEmpty) {

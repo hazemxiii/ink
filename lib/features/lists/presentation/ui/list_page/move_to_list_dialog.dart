@@ -11,7 +11,7 @@ class MoveToListDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeViewmodelProvider);
     final listsState = ref.watch(listsViewmodelProvider);
-    final lists = (listsState.value ?? [])
+    final lists = (listsState.value?.lists ?? [])
         .where((list) => list.id != listId)
         .toList();
     return AlertDialog(

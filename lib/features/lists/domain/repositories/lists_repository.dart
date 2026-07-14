@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ink/features/lists/data/datasources/local_lists_datasource.dart';
 import 'package:ink/features/lists/data/datasources/remote_lists_datasource.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/data/repositories/lists_repository_impl.dart';
 
 abstract class ListsRepository {
-  Stream<List<InkList>> watchLists();
+  Stream<WatchListsStreamData> watchLists();
 
   Stream<InkList> watchList(String id);
 
@@ -16,5 +17,15 @@ abstract class ListsRepository {
 }
 
 final listsRepositoryProvider = Provider<ListsRepository>(
-  (ref) => ListsRepositoryImpl(ref.watch(remoteListsDatasourceProvider)),
+  (ref) => ListsRepositoryImpl(
+    ref.watch(remoteListsDatasourceProvider),
+    ref.watch(localListsDatasourceProvider),
+  ),
 );
+
+class WatchListsStreamData {
+  WatchListsStreamData({required this.lists, required this.done, this.error});
+  final List<InkList> lists;
+  final bool done;
+  final String? error;
+}

@@ -17,6 +17,7 @@ class HiveService {
   }
 
   static Future<void> delete() async {
+    debugPrint('===================Deleting boxes===================');
     await Hive.box('lists').clear();
     await Hive.box('notes').clear();
   }

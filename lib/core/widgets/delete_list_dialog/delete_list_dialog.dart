@@ -21,122 +21,140 @@ class DeleteListDialog extends ConsumerStatefulWidget {
 
 class _DeleteListDialogState extends ConsumerState<DeleteListDialog> {
   late final ListViewmodel _listController;
-  late final AsyncValue<InkList> _listState;
-  late final List<InkList> _moveToLists;
+  late AsyncValue<InkList> _listState;
   late final AsyncValue<WatchListsStreamData> _listsState;
   late final InkTheme _theme;
-  late final bool _isEmpty;
   bool _isDeleteSelected = false;
-  String? _moveToListId;
+  // String? _moveToListId;
 
   @override
   void initState() {
     _listController = ref.read(listViewmodelProvider(widget.listId).notifier);
-    _listState = ref.watch(listViewmodelProvider(widget.listId));
     _listsState = ref.watch(listsViewmodelProvider);
-    _isEmpty = _listState.value!.notes.isEmpty;
-    _moveToLists = (_listsState.value?.lists ?? [])
-        .where((list) => list.id != widget.listId)
-        .toList();
-    if (_moveToLists.isEmpty) {
-      _isDeleteSelected = true;
-    }
-    _moveToListId = _moveToLists.firstOrNull?.id;
+    // _isEmpty = _listState.value?.notes.isEmpty??true;
+
     _theme = ref.watch(themeViewmodelProvider);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: _theme.backC,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      title: Text(
-        'Delete List "${_listState.value!.name}"',
-        style: TextStyle(color: _theme.textC),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 8,
-        children: [
-          _isEmpty
-              ? Text(
-                  'This list is empty. Deleting it will remove it permanently.',
-                  style: TextStyle(color: _theme.secTextC),
-                )
-              : Text(
-                  'This list has ${_listState.value!.notes.length} notes. What would you like to do?',
-                  style: TextStyle(color: _theme.secTextC),
+    _listState = ref.watch(listViewmodelProvider(widget.listId));
+    return _listState.when(
+      data: (list) {
+        final isEmpty = list.notes.isEmpty;
+        final moveToLists = (_listsState.value?.lists ?? [])
+            .where((l) => l.id != widget.listId)
+            .toList();
+        if (moveToLists.isEmpty) {
+          _isDeleteSelected = true;
+        }
+        String? moveToListId = moveToLists.firstOrNull?.id;
+        return AlertDialog(
+          backgroundColor: _theme.backC,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: Text(
+            'Delete List "${_listState.value!.name}"',
+            style: TextStyle(color: _theme.textC),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 8,
+            children: [
+              isEmpty
+                  ? Text(
+                      'This list is empty. Deleting it will remove it permanently.',
+                      style: TextStyle(color: _theme.secTextC),
+                    )
+                  : Text(
+                      'This list has ${list.notes.length} notes. What would you like to do?',
+                      style: TextStyle(color: _theme.secTextC),
+                    ),
+              if (!isEmpty) ...[
+                DeleteListItemWidget(
+                  isDelete: true,
+                  onTap: () {
+                    setState(() {
+                      _isDeleteSelected = true;
+                    });
+                  },
+                  isActive: _isDeleteSelected,
                 ),
-          if (!_isEmpty) ...[
-            DeleteListItemWidget(
-              isDelete: true,
-              onTap: () {
-                setState(() {
-                  _isDeleteSelected = true;
-                });
-              },
-              isActive: _isDeleteSelected,
+                DeleteListItemWidget(
+                  isDelete: false,
+                  onTap: () {
+                    setState(() {
+                      _isDeleteSelected = false;
+                    });
+                  },
+                  isActive: !_isDeleteSelected,
+                  listId: moveToListId,
+                  moveToLists: moveToLists,
+                  onMoveToListTap: (listId) {
+                    setState(() {
+                      moveToListId = listId;
+                    });
+                  },
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel', style: TextStyle(color: _theme.secTextC)),
             ),
-            DeleteListItemWidget(
-              isDelete: false,
-              onTap: () {
-                setState(() {
-                  _isDeleteSelected = false;
-                });
-              },
-              isActive: !_isDeleteSelected,
-              listId: _moveToListId,
-              moveToLists: _moveToLists,
-              onMoveToListTap: (listId) {
-                setState(() {
-                  _moveToListId = listId;
-                });
+            InkButton(
+              isMinWidth: true,
+              backC: _isDeleteSelected ? _theme.errorC : _theme.mainC,
+              textC: _theme.textC,
+              text: _isDeleteSelected ? "Delete" : "Move & Delete",
+              onTap: () async {
+                try {
+                  await _listController.deleteList(
+                    moveToListId: (_isDeleteSelected || moveToListId == null)
+                        ? null
+                        : moveToListId,
+                  );
+                  final selectedListState = ref.read(selectedListProvider);
+                  if (selectedListState.value == _listController.id) {
+                    ref
+                        .read(selectedListProvider.notifier)
+                        .selectList(
+                          moveToListId ?? moveToLists.firstOrNull?.id,
+                        );
+                  }
+                  ref.invalidate(listsViewmodelProvider);
+                  if (moveToListId != null) {
+                    ref.invalidate(listViewmodelProvider(moveToListId!));
+                  }
+                  if (!context.mounted) return;
+                  Navigator.pop(context);
+                } catch (e) {
+                  if (!context.mounted) return;
+                  ref
+                      .read(inkToastServiceProvider)
+                      .showErrorToast(
+                        context,
+                        _theme,
+                        "Error deleting list",
+                        e.toString(),
+                      );
+                }
               },
             ),
           ],
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('Cancel', style: TextStyle(color: _theme.secTextC)),
-        ),
-        InkButton(
-          isMinWidth: true,
-          backC: _isDeleteSelected ? _theme.errorC : _theme.mainC,
-          textC: _theme.textC,
-          text: _isDeleteSelected ? "Delete" : "Move & Delete",
-          onTap: () async {
-            try {
-              await _listController.deleteList(
-                moveToListId: _isDeleteSelected ? null : _moveToListId,
-              );
-              final selectedListState = ref.read(selectedListProvider);
-              if (selectedListState.value == _listController.id) {
-                ref
-                    .read(selectedListProvider.notifier)
-                    .selectList(_moveToListId ?? _moveToLists.firstOrNull?.id);
-              }
-              ref.invalidate(listsViewmodelProvider);
-              ref.invalidate(listViewmodelProvider(_moveToListId!));
-              if (!context.mounted) return;
-              Navigator.pop(context);
-            } catch (e) {
-              if (!context.mounted) return;
-              ref
-                  .read(inkToastServiceProvider)
-                  .showErrorToast(
-                    context,
-                    _theme,
-                    "Error deleting list",
-                    e.toString(),
-                  );
-            }
-          },
-        ),
-      ],
+        );
+      },
+      error: (Object error, StackTrace stackTrace) {
+        return Center(child: Text('Error: $error'));
+      },
+      loading: () {
+        return Center(child: CircularProgressIndicator(color: _theme.mainC));
+      },
     );
   }
 }

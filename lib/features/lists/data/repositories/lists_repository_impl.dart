@@ -8,13 +8,16 @@ class ListsRepositoryImpl extends ListsRepository {
   final ListsDatasource _localListsDatasource;
   @override
   Future<InkList> createList(InkList list) async {
-    late final InkList remoteList;
+    InkList? remoteList;
     try {
       remoteList = await _remoteListsDatasource.createList(list);
     } catch (e) {
       //
     }
-    return await _localListsDatasource.createList(remoteList);
+    // TODO sync operations
+    return await _localListsDatasource.createList(
+      remoteList ?? list.copyWith(id: DateTime.now().toIso8601String()),
+    );
   }
 
   @override
@@ -62,7 +65,7 @@ class ListsRepositoryImpl extends ListsRepository {
         error: "Failed to get local data: ${e.toString()}",
       );
     }
-    await Future.delayed(const Duration(seconds: 3));
+    // await Future.delayed(const Duration(seconds: 3));
     try {
       final lists = await _remoteListsDatasource.getLists();
       yield WatchListsStreamData(lists: lists, done: true);

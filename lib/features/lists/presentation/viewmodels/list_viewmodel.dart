@@ -24,7 +24,7 @@ class ListViewmodel extends StreamNotifier<InkList> {
   Future<void> updateList(InkList list) async {
     final updateList = ref.read(updateListProvider);
     await updateList(list);
-    state = AsyncValue.data(list.copyWith(notes: state.value!.notes));
+    state = AsyncValue.data(list.copyWith(notes: state.value?.notes));
   }
 
   Future<void> deleteList({String? moveToListId}) async {

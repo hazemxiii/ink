@@ -52,7 +52,7 @@ class LocalListsDatasource extends ListsDatasource {
   @override
   Future<InkList> getList(String id) async {
     try {
-      final listJson = listsBox.get(id);
+      final listJson = Map<String, dynamic>.from(listsBox.get(id) ?? {});
       final listSummary = InkListSummary.fromJson(listJson);
       final notes = <Note>[];
       for (final noteId in listSummary.notesIds) {
@@ -83,15 +83,14 @@ class LocalListsDatasource extends ListsDatasource {
             (l) => InkList(
               id: l.id,
               name: l.name,
+              color: l.color,
               notes: [],
               createdAt: l.createdAt,
               updatedAt: l.updatedAt,
             ),
           )
           .toList();
-    } catch (e, stack) {
-      print(e);
-      print(stack);
+    } catch (e) {
       throw InkException("Unexpected Error");
     }
   }

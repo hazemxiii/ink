@@ -13,7 +13,6 @@ class InkListSummary {
     required this._createdAt,
     required this._updatedAt,
   });
-  // TODO color doesn't appear on local fetch
   factory InkListSummary.fromJson(Map<String, dynamic> json) {
     return InkListSummary(
       id: json['id'] ?? json['_id'] ?? '',

@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:ink/core/extensions/color.ext.dart';
 import 'package:ink/core/extensions/string.ext.dart';
 import 'package:ink/features/notes/data/models/note.dart';
 
@@ -48,7 +49,7 @@ class InkList {
     return {
       'id': _id,
       'name': _name,
-      'color': _color,
+      'color': _color?.toHex,
       'notes': _notes.map((note) => note.toJson()).toList(),
       'createdAt': _createdAt.toIso8601String(),
       'updatedAt': _updatedAt.toIso8601String(),

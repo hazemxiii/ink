@@ -12,8 +12,10 @@ class HiveService {
 
     debugPrint('===================Lists box===================');
     debugPrint(Hive.box("lists").toMap().toString());
+    debugPrint('+++++++++++++++++++Lists box+++++++++++++++++++');
     debugPrint('===================Notes box===================');
     debugPrint(Hive.box("notes").toMap().toString());
+    debugPrint('+++++++++++++++++++Notes box+++++++++++++++++++');
   }
 
   static Future<void> delete() async {

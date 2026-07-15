@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ink/core/services/sync_queue_service.dart';
 import 'package:ink/features/lists/data/datasources/local_lists_datasource.dart';
 import 'package:ink/features/lists/data/datasources/remote_lists_datasource.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
@@ -14,12 +15,15 @@ abstract class ListsRepository {
   Future<InkList> updateList(InkList list);
 
   Future<void> deleteList(String id, {String? moveToId});
+
+  bool isLocalId(String id);
 }
 
 final listsRepositoryProvider = Provider<ListsRepository>(
   (ref) => ListsRepositoryImpl(
     ref.watch(remoteListsDatasourceProvider),
     ref.watch(localListsDatasourceProvider),
+    ref.watch(syncQueueServiceProvider),
   ),
 );
 

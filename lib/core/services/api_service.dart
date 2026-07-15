@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:ink/core/exceptions/ink_exception.dart';
 import 'package:ink/core/services/token_storage.dart';
 
+enum Methods { get, post, patch, delete }
+
 class ApiService {
   ApiService(this._tokenStorage);
   final TokenStorage _tokenStorage;
@@ -39,12 +41,16 @@ class ApiService {
     }
   }
 
-  Future<dynamic> post(String path, dynamic body) async {
+  Future<dynamic> post(
+    String path,
+    dynamic body, {
+    bool encodeBody = true,
+  }) async {
     late final http.Response response;
     try {
       response = await http.post(
         Uri.parse(_baseUrl + path),
-        body: jsonEncode(body),
+        body: encodeBody ? jsonEncode(body) : body,
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $_token",
@@ -67,12 +73,16 @@ class ApiService {
     }
   }
 
-  Future<dynamic> patch(String path, dynamic body) async {
+  Future<dynamic> patch(
+    String path,
+    dynamic body, {
+    bool encodeBody = true,
+  }) async {
     late final http.Response response;
     try {
       response = await http.patch(
         Uri.parse(_baseUrl + path),
-        body: jsonEncode(body),
+        body: encodeBody ? jsonEncode(body) : body,
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $_token",

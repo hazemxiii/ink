@@ -4,6 +4,7 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ink/core/services/hive_service.dart';
+import 'package:ink/core/services/sync_queue_service.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/ink_sidebar/ink_sidebar.dart';
 import 'package:ink/features/lists/presentation/ui/list_page/list_page.dart';
@@ -29,6 +30,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   @override
   void initState() {
+    ref.read(syncQueueServiceProvider).printQueue();
     super.initState();
     router = GoRouter(
       routes: [

@@ -14,26 +14,37 @@ class ListsViewmodel extends StreamNotifier<WatchListsStreamData> {
 
   Future<void> addList(InkList list) async {
     final createList = ref.read(createListProvider);
-    final resultList = await createList(list);
+    final oldValue = [...(state.value?.lists ?? <InkList>[])];
     state = AsyncValue.data(
-      WatchListsStreamData(
-        lists: [...state.value!.lists, resultList],
-        done: state.value!.done,
-      ),
+      WatchListsStreamData(lists: [...oldValue, list], done: true),
     );
+    try {
+      await createList(list);
+    } catch (e) {
+      state = AsyncValue.data(
+        WatchListsStreamData(lists: oldValue, done: true),
+      );
+      rethrow;
+    }
   }
 
   Future<void> updateList(InkList list) async {
-    final updateList = ref.read(updateListProvider);
-    final resultList = await updateList(list);
+    final oldValue = [...(state.value?.lists ?? <InkList>[])];
     state = AsyncValue.data(
       WatchListsStreamData(
-        lists: state.value!.lists
-            .map((e) => e.id == list.id ? resultList : e)
-            .toList(),
-        done: state.value!.done,
+        lists: oldValue.map((e) => e.id == list.id ? list : e).toList(),
+        done: true,
       ),
     );
+    final updateList = ref.read(updateListProvider);
+    try {
+      await updateList(list);
+    } catch (e) {
+      state = AsyncValue.data(
+        WatchListsStreamData(lists: oldValue, done: true),
+      );
+      rethrow;
+    }
   }
 }
 

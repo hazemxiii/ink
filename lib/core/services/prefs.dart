@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/core/models/theme/ink_theme.dart';
-import 'package:ink/core/services/sync_queue_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Prefs {
@@ -10,23 +7,6 @@ class Prefs {
     prefs = SharedPreferencesAsync();
   }
   late SharedPreferencesAsync prefs;
-
-  Future<List<SyncRequest>> getSyncQueue() async {
-    final queue = await prefs.getStringList('sync_queue');
-    if (queue == null) {
-      return [];
-    }
-    return queue
-        .map(
-          (e) => SyncRequest.fromJson(Map<String, dynamic>.from(jsonDecode(e))),
-        )
-        .toList();
-  }
-
-  Future<void> setSyncQueue(List<SyncRequest> queue) async {
-    final queueJson = queue.map((e) => jsonEncode(e.toJson())).toList();
-    await prefs.setStringList('sync_queue', queueJson);
-  }
 
   Future<void> setStartupList(String? id) async {
     if (id == null) {

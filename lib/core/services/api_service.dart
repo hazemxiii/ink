@@ -1,10 +1,11 @@
 import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:ink/core/exceptions/ink_exception.dart';
+import 'package:ink/core/exceptions/internet_ink_exception.dart';
+import 'package:ink/core/services/logger.dart';
 import 'package:ink/core/services/token_storage.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 enum Methods { get, post, patch, delete }
 
@@ -14,7 +15,14 @@ class ApiService {
   final _baseUrl = "http://localhost:3000/";
   String? get _token => _tokenStorage.token;
 
+  Future<bool> _hasInternet() async {
+    return await InternetConnection().hasInternetAccess;
+  }
+
   Future<dynamic> get(String path) async {
+    if (!(await _hasInternet())) {
+      throw InternetInkException("No internet connection");
+    }
     late final http.Response response;
     try {
       response = await http.get(
@@ -24,9 +32,9 @@ class ApiService {
           "Authorization": "Bearer $_token",
         },
       );
-      debugPrint("GET: $path\n ${response.body}\n===================");
+      Logger.log("GET: $path\n ${response.body}");
     } catch (e) {
-      throw InkException("Failed to reach the server");
+      throw InternetInkException("Failed to reach the server");
     }
     late final Map<String, dynamic> responseBody;
     try {
@@ -36,6 +44,8 @@ class ApiService {
     }
     if (response.statusCode == 200) {
       return responseBody;
+    } else if (response.statusCode == 500) {
+      throw InternetInkException("Server error");
     } else {
       throw InkException(responseBody['message']);
     }
@@ -46,6 +56,9 @@ class ApiService {
     dynamic body, {
     bool encodeBody = true,
   }) async {
+    if (!(await _hasInternet())) {
+      throw InternetInkException("No internet connection");
+    }
     late final http.Response response;
     try {
       response = await http.post(
@@ -56,9 +69,9 @@ class ApiService {
           "Authorization": "Bearer $_token",
         },
       );
-      debugPrint("POST: $path\n ${response.body}\n===================");
+      Logger.log("POST: $path\n ${response.body}");
     } catch (e) {
-      throw InkException("Failed to reach the server");
+      throw InternetInkException("Failed to reach the server");
     }
     late final Map<String, dynamic> responseBody;
     try {
@@ -68,6 +81,8 @@ class ApiService {
     }
     if (response.statusCode.toString().startsWith("2")) {
       return responseBody;
+    } else if (response.statusCode == 500) {
+      throw InternetInkException("Server error");
     } else {
       throw InkException(responseBody['message']);
     }
@@ -78,6 +93,9 @@ class ApiService {
     dynamic body, {
     bool encodeBody = true,
   }) async {
+    if (!(await _hasInternet())) {
+      throw InternetInkException("No internet connection");
+    }
     late final http.Response response;
     try {
       response = await http.patch(
@@ -88,9 +106,9 @@ class ApiService {
           "Authorization": "Bearer $_token",
         },
       );
-      debugPrint("PATCH: $path\n ${response.body}\n===================");
+      Logger.log("PATCH: $path\n ${response.body}");
     } catch (e) {
-      throw InkException("Failed to reach the server");
+      throw InternetInkException("Failed to reach the server");
     }
     late final Map<String, dynamic> responseBody;
     try {
@@ -100,12 +118,17 @@ class ApiService {
     }
     if (response.statusCode == 200) {
       return responseBody;
+    } else if (response.statusCode == 500) {
+      throw InternetInkException("Server error");
     } else {
       throw InkException(responseBody['message']);
     }
   }
 
   Future<dynamic> delete(String path) async {
+    if (!(await _hasInternet())) {
+      throw InternetInkException("No internet connection");
+    }
     late final http.Response response;
     try {
       response = await http.delete(
@@ -115,9 +138,9 @@ class ApiService {
           "Authorization": "Bearer $_token",
         },
       );
-      debugPrint("DELETE: $path\n ${response.body}\n===================");
+      Logger.log("DELETE: $path\n ${response.body}");
     } catch (e) {
-      throw InkException("Failed to reach the server");
+      throw InternetInkException("Failed to reach the server");
     }
     late final Map<String, dynamic> responseBody;
     try {
@@ -127,6 +150,8 @@ class ApiService {
     }
     if (response.statusCode == 200) {
       return responseBody;
+    } else if (response.statusCode == 500) {
+      throw InternetInkException("Server error");
     } else {
       throw InkException(responseBody['message']);
     }

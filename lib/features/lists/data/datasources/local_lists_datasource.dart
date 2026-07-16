@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:ink/core/exceptions/ink_exception.dart';
 import 'package:ink/core/services/hive_service.dart';
+import 'package:ink/core/services/logger.dart';
 import 'package:ink/features/lists/data/datasources/lists_datasource.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/data/models/ink_list_summary.dart';
@@ -16,6 +17,7 @@ class LocalListsDatasource extends ListsDatasource {
   @override
   Future<InkList> createList(InkList list) async {
     try {
+      Logger.log("creating or updating list: ${list.toJson()} locally");
       await listsBox.put(list.id, InkListSummary.fromParent(list).toJson());
       return list;
     } catch (e) {
@@ -26,6 +28,7 @@ class LocalListsDatasource extends ListsDatasource {
   @override
   Future<void> deleteList(String id, {String? moveToId}) async {
     try {
+      Logger.log("deleting list: $id locally");
       final list = await getList(id);
       if (moveToId != null) {
         final notes = list.notes;
@@ -59,13 +62,15 @@ class LocalListsDatasource extends ListsDatasource {
         final noteJson = notesBox.get(noteId);
         notes.add(Note.fromJson(noteJson));
       }
-      return InkList(
+      final localList = InkList(
         id: listSummary.id,
         name: listSummary.name,
         notes: notes,
         createdAt: listSummary.createdAt,
         updatedAt: listSummary.updatedAt,
       );
+      Logger.log("local list: ${localList.toJson()}");
+      return localList;
     } catch (e) {
       throw InkException("Unexpected Error");
     }
@@ -78,7 +83,7 @@ class LocalListsDatasource extends ListsDatasource {
           .map((e) => InkListSummary.fromJson(Map<String, dynamic>.from(e)))
           .toList();
 
-      return lists
+      final localLists = lists
           .map(
             (l) => InkList(
               id: l.id,
@@ -90,6 +95,9 @@ class LocalListsDatasource extends ListsDatasource {
             ),
           )
           .toList();
+
+      Logger.log("local lists: ${localLists.map((e) => e.toJson()).toList()}");
+      return localLists;
     } catch (e) {
       throw InkException("Unexpected Error");
     }

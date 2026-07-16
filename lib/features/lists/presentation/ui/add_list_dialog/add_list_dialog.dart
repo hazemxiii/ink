@@ -5,9 +5,9 @@ import 'package:ink/core/widgets/ink_button.dart';
 import 'package:ink/core/widgets/text_input.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/presentation/ui/add_list_dialog/color_picker_row.dart';
-import 'package:ink/features/lists/presentation/viewmodels/list_viewmodel.dart';
-import 'package:ink/features/lists/presentation/viewmodels/lists_viewmodel.dart';
+import 'package:uuid/uuid.dart';
 
+// TODO implement edit
 class AddListDialog extends ConsumerStatefulWidget {
   const AddListDialog({super.key, this.list});
   final InkList? list;
@@ -19,17 +19,17 @@ class AddListDialog extends ConsumerStatefulWidget {
 class _AddListDialogState extends ConsumerState<AddListDialog> {
   final TextEditingController _nameController = TextEditingController();
   late Color _selectedColor;
-  bool get _isEditing => widget.list != null;
-  bool _isLoading = false;
+  // bool get _isEditing => widget.list != null;
+  // bool _isLoading = false;
   String? _error;
 
   @override
   void initState() {
     super.initState();
     _selectedColor = widget.list?.color ?? Colors.white;
-    if (_isEditing) {
-      _nameController.text = widget.list!.name;
-    }
+    // if (_isEditing) {
+    // }
+    _nameController.text = widget.list?.name ?? "";
   }
 
   @override
@@ -67,7 +67,7 @@ class _AddListDialogState extends ConsumerState<AddListDialog> {
           ),
           TextInput(
             textInputAction: TextInputAction.done,
-            onSubmitted: (v) => _onSubmit(),
+            // onSubmitted: (v) => _onSubmit(),
             controller: _nameController,
             label: "List name",
             textC: theme.mainC,
@@ -81,11 +81,16 @@ class _AddListDialogState extends ConsumerState<AddListDialog> {
             },
           ),
           InkButton(
-            onTap: _onSubmit,
-            text: _isEditing ? "Save" : "Create",
+            onTap: () {
+              final list = _onSubmit();
+              if (list != null) {
+                Navigator.pop(context, list);
+              }
+            },
+            text: widget.list != null ? "Save" : "Create",
             backC: theme.mainC,
             textC: theme.textC,
-            isLoading: _isLoading,
+            // isLoading: _isLoading,
           ),
           if (_error != null)
             Text(
@@ -97,51 +102,58 @@ class _AddListDialogState extends ConsumerState<AddListDialog> {
     );
   }
 
-  Future<void> _onSubmit() async {
-    if (_isLoading) return;
+  InkList? _onSubmit() {
+    // if (_isLoading) return null;
     if (_nameController.text.isEmpty) {
       setState(() {
         _error = "List name cannot be empty";
       });
-      return;
+      return null;
     }
     setState(() {
-      _isLoading = true;
+      // _isLoading = true;
       _error = null;
     });
-    try {
-      if (_isEditing) {
-        await ref
-            .read(listViewmodelProvider(widget.list!.id).notifier)
-            .updateList(
-              widget.list!.copyWith(
-                name: _nameController.text,
-                color: _selectedColor,
-              ),
-            );
-        ref.invalidate(listsViewmodelProvider);
-      } else {
-        await ref
-            .read(listsViewmodelProvider.notifier)
-            .addList(
-              InkList(
-                name: _nameController.text,
-                color: _selectedColor,
-                id: '',
-                notes: [],
-                createdAt: DateTime.now(),
-                updatedAt: DateTime.now(),
-              ),
-            );
-      }
-      if (mounted) Navigator.pop(context);
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-      });
-    }
-    setState(() {
-      _isLoading = false;
-    });
+    return InkList(
+      id: widget.list?.id ?? const Uuid().v4(),
+      name: _nameController.text,
+      color: _selectedColor,
+      notes: [],
+      createdAt: DateTime.now().toUtc(),
+      updatedAt: DateTime.now().toUtc(),
+    );
+    // try {
+    //   if (_isEditing) {
+    //     await ref
+    //         .read(listViewmodelProvider(widget.list!.id).notifier)
+    //         .updateList(
+    //           widget.list!.copyWith(
+    //             name: _nameController.text,
+    //             color: _selectedColor,
+    //           ),
+    //         );
+    //   } else {
+    //     await ref
+    //         .read(listsViewmodelProvider.notifier)
+    //         .addList(
+    //           InkList(
+    //             id: const Uuid().v4(),
+    //             name: _nameController.text,
+    //             color: _selectedColor,
+    //             notes: [],
+    //             createdAt: DateTime.now().toUtc(),
+    //             updatedAt: DateTime.now().toUtc(),
+    //           ),
+    //         );
+    //   }
+    //   if (mounted) Navigator.pop(context);
+    // } catch (e) {
+    //   setState(() {
+    //     _error = e.toString();
+    //   });
+    // }
+    // setState(() {
+    //   _isLoading = false;
+    // });
   }
 }

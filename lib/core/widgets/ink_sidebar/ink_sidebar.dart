@@ -5,6 +5,7 @@ import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/ink_button.dart';
 import 'package:ink/core/widgets/ink_logo.dart';
 import 'package:ink/core/widgets/ink_sidebar/side_bar_list_widget.dart';
+import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/presentation/ui/add_list_dialog/add_list_dialog.dart';
 import 'package:ink/features/lists/presentation/viewmodels/lists_viewmodel.dart';
 import 'package:ink/features/lists/presentation/viewmodels/selected_list_viewmodel.dart';
@@ -100,11 +101,27 @@ class _InkSidebarState extends ConsumerState<InkSidebar> {
               ),
             ),
             InkButton(
-              onTap: () {
-                showDialog(
+              onTap: () async {
+                final InkList? result = await showDialog(
                   context: context,
                   builder: (context) => const AddListDialog(),
                 );
+                if (result != null && context.mounted) {
+                  try {
+                    await ref
+                        .read(listsViewmodelProvider.notifier)
+                        .addList(result);
+                  } catch (e) {
+                    if (context.mounted) {
+                      _toastService.showErrorToast(
+                        context,
+                        theme,
+                        "Error adding list",
+                        e.toString(),
+                      );
+                    }
+                  }
+                }
               },
               text: "New list",
               icon: Icons.add,

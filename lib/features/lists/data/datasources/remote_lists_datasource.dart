@@ -1,8 +1,8 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ink/core/exceptions/ink_exception.dart';
 import 'package:ink/core/extensions/color.ext.dart';
 import 'package:ink/core/services/api_service.dart';
+import 'package:ink/core/services/logger.dart';
 import 'package:ink/features/lists/data/datasources/lists_datasource.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
 
@@ -19,8 +19,7 @@ class RemoteListsDatasource extends ListsDatasource {
     try {
       return InkList.fromJson(json);
     } catch (e) {
-      debugPrint(e.toString());
-      debugPrintStack();
+      Logger.log(e.toString());
       throw InkException("Unexpected Error");
     }
   }
@@ -38,8 +37,7 @@ class RemoteListsDatasource extends ListsDatasource {
     try {
       return InkList.fromJson(json);
     } catch (e) {
-      debugPrint(e.toString());
-      debugPrintStack();
+      Logger.log(e.toString());
       throw InkException("Unexpected Error");
     }
   }
@@ -54,8 +52,7 @@ class RemoteListsDatasource extends ListsDatasource {
       json['notes'] = [];
       return InkList.fromJson(json);
     } catch (e) {
-      debugPrint(e.toString());
-      debugPrintStack();
+      Logger.log(e.toString());
       throw InkException("Unexpected Error");
     }
   }
@@ -70,8 +67,7 @@ class RemoteListsDatasource extends ListsDatasource {
       }).toList();
       return List<InkList>.from(list);
     } catch (e) {
-      debugPrint(e.toString());
-      debugPrintStack();
+      Logger.log(e.toString());
       throw InkException("Unexpected Error");
     }
   }

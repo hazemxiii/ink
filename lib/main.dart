@@ -4,9 +4,11 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ink/core/services/hive_service.dart';
+import 'package:ink/core/services/ink_toast_service.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/ink_sidebar/ink_sidebar.dart';
 import 'package:ink/features/lists/presentation/ui/list_page/list_page.dart';
+import 'package:ink/features/syncing/syncing_viewmodel.dart';
 
 /* 
 https://lovable.dev/preview/1agK9Ftxb1rq0QEjVNEx8ifoo2zgQ3jt
@@ -64,15 +66,34 @@ class Home extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeViewmodelProvider);
+    final syncState = ref.watch(syncingViewmodelProvider);
     return Scaffold(
       backgroundColor: theme.backC,
       appBar: AppBar(
         actions: [
-          IconButton(
-            onPressed: () {
-              // ref.read(syncQueueProvider).execute();
+          syncState.when(
+            data: (data) {
+              return IconButton(
+                onPressed: () {
+                  // ref.read(syncQueueProvider).execute();
+                },
+                icon: Icon(Icons.sync, color: theme.textC),
+              );
             },
-            icon: Icon(Icons.sync, color: theme.textC),
+            loading: () => CircularProgressIndicator(color: theme.mainC),
+            error: (error, stack) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                ref
+                    .read(inkToastServiceProvider)
+                    .showErrorToast(
+                      context,
+                      theme,
+                      "Syncing Error",
+                      error.toString(),
+                    );
+              });
+              return const SizedBox();
+            },
           ),
         ],
         backgroundColor: theme.backC,

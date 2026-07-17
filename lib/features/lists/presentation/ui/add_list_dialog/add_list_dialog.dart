@@ -7,7 +7,6 @@ import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/presentation/ui/add_list_dialog/color_picker_row.dart';
 import 'package:uuid/uuid.dart';
 
-// TODO implement edit
 class AddListDialog extends ConsumerStatefulWidget {
   const AddListDialog({super.key, this.list});
   final InkList? list;
@@ -120,7 +119,7 @@ class _AddListDialogState extends ConsumerState<AddListDialog> {
       color: _selectedColor,
       notes: [],
       createdAt: DateTime.now().toUtc(),
-      updatedAt: DateTime.now().toUtc(),
+      // updatedAt: DateTime.now().toUtc(),
     );
     // try {
     //   if (_isEditing) {

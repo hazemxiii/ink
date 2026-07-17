@@ -11,7 +11,7 @@ class InkList {
     this._color,
     required this._notes,
     required this._createdAt,
-    required this._updatedAt,
+    // required this._updatedAt,
   });
 
   factory InkList.empty() => InkList(
@@ -19,7 +19,7 @@ class InkList {
     name: "",
     notes: [],
     createdAt: DateTime.now(),
-    updatedAt: DateTime.now(),
+    // updatedAt: DateTime.now(),
   );
 
   factory InkList.fromJson(dynamic json) {
@@ -34,7 +34,7 @@ class InkList {
       color: json['color']?.toString().toColor,
       notes: notes,
       createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      // updatedAt: DateTime.parse(json['createdAt'] as String),
     );
   }
 
@@ -43,7 +43,7 @@ class InkList {
   final Color? _color;
   final List<Note> _notes;
   final DateTime _createdAt;
-  final DateTime _updatedAt;
+  // final DateTime _updatedAt;
 
   Map<String, dynamic> toJson() {
     return {
@@ -52,7 +52,7 @@ class InkList {
       'color': _color?.toHex,
       'notes': _notes.map((note) => note.toJson()).toList(),
       'createdAt': _createdAt.toIso8601String(),
-      'updatedAt': _updatedAt.toIso8601String(),
+      // 'updatedAt': _updatedAt.toIso8601String(),
     };
   }
 
@@ -62,7 +62,7 @@ class InkList {
     Color? color,
     List<Note>? notes,
     DateTime? createdAt,
-    DateTime? updatedAt,
+    // DateTime? updatedAt,
   }) {
     return InkList(
       id: id ?? _id,
@@ -70,7 +70,7 @@ class InkList {
       color: color ?? _color,
       notes: notes ?? _notes,
       createdAt: createdAt ?? _createdAt,
-      updatedAt: updatedAt ?? _updatedAt,
+      // updatedAt: updatedAt ?? _updatedAt,
     );
   }
 
@@ -79,5 +79,5 @@ class InkList {
   Color? get color => _color;
   List<Note> get notes => _notes;
   DateTime get createdAt => _createdAt;
-  DateTime get updatedAt => _updatedAt;
+  // DateTime get updatedAt => _updatedAt;
 }

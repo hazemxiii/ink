@@ -13,9 +13,10 @@ class RemoteListsDatasource extends ListsDatasource {
   @override
   Future<InkList> createList(InkList list) async {
     final json = await _apiService.post("lists", {
+      "id": list.id,
       "name": list.name,
       if (list.color != null) "color": list.color!.toHex,
-    });
+    }, isoDate: list.createdAt.toIso8601String());
     try {
       return InkList.fromJson(json);
     } catch (e) {
@@ -58,7 +59,7 @@ class RemoteListsDatasource extends ListsDatasource {
   }
 
   @override
-  Future<List<InkList>> getLists() async {
+  Future<List<InkList>> getListsWithoutNotes() async {
     final json = (await _apiService.get("lists"))['lists'];
     try {
       final list = json.map((e) {

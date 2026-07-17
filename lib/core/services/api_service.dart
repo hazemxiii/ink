@@ -55,6 +55,7 @@ class ApiService {
     String path,
     dynamic body, {
     bool encodeBody = true,
+    String? isoDate,
   }) async {
     if (!(await _hasInternet())) {
       throw InternetInkException("No internet connection");
@@ -67,6 +68,7 @@ class ApiService {
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $_token",
+          "timestamp": ?isoDate,
         },
       );
       Logger.log("POST: $path\n ${response.body}");
@@ -92,6 +94,7 @@ class ApiService {
     String path,
     dynamic body, {
     bool encodeBody = true,
+    String? isoDate,
   }) async {
     if (!(await _hasInternet())) {
       throw InternetInkException("No internet connection");
@@ -104,6 +107,7 @@ class ApiService {
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $_token",
+          "timestamp": ?isoDate,
         },
       );
       Logger.log("PATCH: $path\n ${response.body}");
@@ -125,7 +129,7 @@ class ApiService {
     }
   }
 
-  Future<dynamic> delete(String path) async {
+  Future<dynamic> delete(String path, {String? isoDate}) async {
     if (!(await _hasInternet())) {
       throw InternetInkException("No internet connection");
     }
@@ -136,6 +140,7 @@ class ApiService {
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $_token",
+          "timestamp": ?isoDate,
         },
       );
       Logger.log("DELETE: $path\n ${response.body}");

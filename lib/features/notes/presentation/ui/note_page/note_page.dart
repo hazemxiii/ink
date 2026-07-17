@@ -22,7 +22,7 @@ class NotePage extends ConsumerStatefulWidget {
   final Note _note;
   final InkList list;
   final bool _createNew;
-
+  // TODO create note id on the client
   @override
   ConsumerState<NotePage> createState() => _NoteDialogState();
 }

@@ -65,9 +65,10 @@ class LocalListsDatasource extends ListsDatasource {
       final localList = InkList(
         id: listSummary.id,
         name: listSummary.name,
+        color: listSummary.color,
         notes: notes,
         createdAt: listSummary.createdAt,
-        updatedAt: listSummary.updatedAt,
+        // updatedAt: listSummary.updatedAt,
       );
       Logger.log("local list: ${localList.toJson()}");
       return localList;
@@ -77,7 +78,7 @@ class LocalListsDatasource extends ListsDatasource {
   }
 
   @override
-  Future<List<InkList>> getLists() async {
+  Future<List<InkList>> getListsWithoutNotes() async {
     try {
       final lists = listsBox.values
           .map((e) => InkListSummary.fromJson(Map<String, dynamic>.from(e)))
@@ -91,7 +92,7 @@ class LocalListsDatasource extends ListsDatasource {
               color: l.color,
               notes: [],
               createdAt: l.createdAt,
-              updatedAt: l.updatedAt,
+              // updatedAt: l.updatedAt,
             ),
           )
           .toList();

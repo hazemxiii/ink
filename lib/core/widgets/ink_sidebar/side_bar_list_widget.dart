@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ink/core/services/ink_toast_service.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/delete_list_dialog/delete_list_dialog.dart';
 import 'package:ink/core/widgets/ink_button.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/presentation/ui/add_list_dialog/add_list_dialog.dart';
+import 'package:ink/features/lists/presentation/viewmodels/lists_viewmodel.dart';
 import 'package:ink/features/lists/presentation/viewmodels/selected_list_viewmodel.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -85,13 +87,29 @@ class _SideBarListWidgetState extends ConsumerState<SideBarListWidget> {
               Transform.scale(
                 scale: 0.8,
                 child: InkButton(
-                  onTap: () {
-                    showDialog(
+                  onTap: () async {
+                    final InkList? list = await showDialog(
                       context: context,
                       builder: (context) {
                         return AddListDialog(list: widget.list);
                       },
                     );
+                    if (list == null) return;
+                    try {
+                      await ref
+                          .read(listsViewmodelProvider.notifier)
+                          .updateList(list);
+                    } catch (e) {
+                      if (!context.mounted) return;
+                      ref
+                          .read(inkToastServiceProvider)
+                          .showErrorToast(
+                            context,
+                            theme,
+                            "Failed to update list",
+                            e.toString(),
+                          );
+                    }
                   },
                   backC: Colors.transparent,
                   textC: theme.mainC,

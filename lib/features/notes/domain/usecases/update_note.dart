@@ -5,7 +5,7 @@ import 'package:ink/features/notes/data/repositories/notes_repository.dart';
 class UpdateNote {
   UpdateNote(this.notesRepository);
   final NotesRepository notesRepository;
-  Future<Note> call(Note note) async {
+  Future<void> call(Note note) async {
     return await notesRepository.update(note);
   }
 }

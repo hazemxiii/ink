@@ -11,6 +11,7 @@ import 'package:ink/features/notes/domain/usecases/create_note.dart';
 import 'package:ink/features/notes/domain/usecases/delete_note.dart';
 import 'package:ink/features/notes/domain/usecases/move_notes.dart';
 import 'package:ink/features/notes/domain/usecases/update_note.dart';
+import 'package:uuid/uuid.dart';
 
 class ListViewmodel extends StreamNotifier<InkList> {
   ListViewmodel(this.id);
@@ -31,32 +32,21 @@ class ListViewmodel extends StreamNotifier<InkList> {
     await ref.read(deleteListProvider)(id, moveToId: moveToListId);
   }
 
-  Future<String> createNote() async {
-    final noteId = await ref.read(createNoteProvider)(id);
+  Future<Note> createNote(Note note) async {
+    await ref.read(createNoteProvider)(id, note);
     state = AsyncValue.data(
-      state.value!.copyWith(
-        notes: [
-          ...state.value!.notes,
-          Note(
-            id: noteId,
-            title: '',
-            content: '',
-            createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
-          ),
-        ],
-      ),
+      state.value!.copyWith(notes: [...state.value!.notes, note]),
     );
-    return noteId;
+    return note;
   }
 
   Future<void> updateNote(Note note) async {
     final updateNote = ref.read(updateNoteProvider);
-    final updatedNote = await updateNote(note);
+    await updateNote(note);
     state = AsyncValue.data(
       state.value!.copyWith(
         notes: state.value!.notes
-            .map((e) => e.id == note.id ? updatedNote : e)
+            .map((e) => e.id == note.id ? note : e)
             .toList(),
       ),
     );

@@ -61,13 +61,7 @@ class _ListSectionState extends ConsumerState<ListSection> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) {
-                            return NotePage(
-                              note: Note.empty().copyWith(
-                                id: const UuidV4().generate(),
-                              ),
-                              list: widget.list,
-                              createNew: true,
-                            );
+                            return NotePage(note: null, list: widget.list);
                           },
                         ),
                       );

@@ -4,7 +4,6 @@ import 'package:ink/core/models/sync_queue.dart';
 import 'package:ink/features/lists/data/datasources/lists_datasource.dart';
 import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/domain/repositories/lists_repository.dart';
-import 'package:ink/features/notes/data/datasources/notes_datasource.dart';
 
 class ListsRepositoryImpl extends ListsRepository {
   ListsRepositoryImpl(
@@ -57,13 +56,13 @@ class ListsRepositoryImpl extends ListsRepository {
     yield localList;
     await Future.delayed(Duration(seconds: 3));
     final remoteList = await _remoteListsDatasource.getList(id);
-    final remoteNotes = remoteList.notes;
-    final localNotes = localList.notes;
+    // final remoteNotes = remoteList.notes;
+    // final localNotes = localList.notes;
 
-    final localIds = localNotes.map((note) => note.id).toSet();
-    final remoteIds = remoteNotes.map((note) => note.id).toSet();
+    // final localIds = localNotes.map((note) => note.id).toSet();
+    // final remoteIds = remoteNotes.map((note) => note.id).toSet();
 
-    for (final id in localIds) {}
+    // for (final id in localIds) {}
 
     yield remoteList;
   }

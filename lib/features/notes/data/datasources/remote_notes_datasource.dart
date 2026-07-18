@@ -9,9 +9,14 @@ class RemoteNotesDatasource extends NotesDatasource {
   RemoteNotesDatasource(this.apiService);
   final ApiService apiService;
   @override
-  Future<String> create(String listId) async {
-    final note = await apiService.post("notes", {"listId": listId});
-    return note['_id'];
+  Future<Note> create(String listId, Note note) async {
+    final noteData = await apiService.post("notes", {
+      "id": note.id,
+      "listId": listId,
+      "title": note.title,
+      "content": note.content,
+    });
+    return Note.fromJson(noteData);
   }
 
   @override

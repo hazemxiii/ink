@@ -70,11 +70,7 @@ class _NoteWidgetState extends ConsumerState<NoteWidget>
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) {
-              return NotePage(
-                note: widget.note,
-                createNew: false,
-                list: widget.list,
-              );
+              return NotePage(note: widget.note, list: widget.list);
             },
           ),
         );

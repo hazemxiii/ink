@@ -11,17 +11,12 @@ import 'package:ink/features/lists/presentation/viewmodels/list_viewmodel.dart';
 import 'package:ink/features/notes/data/models/note.dart';
 import 'package:ink/features/notes/presentation/ui/note_page/note_footer.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class NotePage extends ConsumerStatefulWidget {
-  const NotePage({
-    super.key,
-    required this._note,
-    required this._createNew,
-    required this.list,
-  });
-  final Note _note;
+  const NotePage({super.key, required this._note, required this.list});
+  final Note? _note;
   final InkList list;
-  final bool _createNew;
   // TODO create note id on the client
   @override
   ConsumerState<NotePage> createState() => _NoteDialogState();
@@ -33,14 +28,19 @@ class _NoteDialogState extends ConsumerState<NotePage> {
   late Note _note;
   late InkToastService _toastService;
   LoadingState _loadingState = LoadingState.done;
-  bool _pendingSave = false;
+  bool _noteCreated = false;
+  bool _pendingUpdates = false;
   Timer? _debounce;
   @override
   void initState() {
     super.initState();
-    _initEmptyNote();
-    _titleController.text = widget._note.title;
-    _contentController.text = widget._note.content;
+    _note = widget._note ?? Note.empty().copyWith(id: const Uuid().v4());
+    if (widget._note != null) _noteCreated = true;
+    if (!_noteCreated) {
+      _createNewNote();
+    }
+    _titleController.text = _note.title;
+    _contentController.text = _note.content;
     _toastService = ref.read(inkToastServiceProvider);
   }
 
@@ -64,7 +64,7 @@ class _NoteDialogState extends ConsumerState<NotePage> {
               CircleAvatar(backgroundColor: widget.list.color, radius: 4),
               const SizedBox(width: 4),
               Text(
-                DateFormat("MMM d, yyyy").format(widget._note.createdAt),
+                DateFormat("MMM d, yyyy").format(_note.createdAt),
                 style: TextStyle(color: theme.secTextC),
               ),
               const Spacer(),
@@ -110,34 +110,38 @@ class _NoteDialogState extends ConsumerState<NotePage> {
     );
   }
 
-  void _initEmptyNote() {
-    _note = widget._note;
-    if (widget._createNew) {
-      if (_note.id.isNotEmpty) {
-        _note = Note.empty();
-      }
-      _loadingState = LoadingState.loading;
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await _createNewNote();
-        if (_pendingSave) {
-          _pendingSave = false;
-          _updateNote();
-        } else {
-          setState(() {
-            _loadingState = LoadingState.done;
-          });
-        }
-      });
-    }
-  }
+  // void _createNote() {
+  //   _note = widget._note;
+  //   if (widget._createNew) {
+  //     if (_note.id.isNotEmpty) {
+  //       _note = Note.empty();
+  //     }
+  //     _loadingState = LoadingState.loading;
+  //     WidgetsBinding.instance.addPostFrameCallback((_) async {
+  //       await _createNewNote();
+  //       if (_pendingSave) {
+  //         _pendingSave = false;
+  //         _updateNote();
+  //       } else {
+  //         setState(() {
+  //           _loadingState = LoadingState.done;
+  //         });
+  //       }
+  //     });
+  //   }
+  // }
 
   Future<void> _createNewNote() async {
     final theme = ref.watch(themeViewmodelProvider);
     try {
-      final id = await ref
+      await ref
           .read(listViewmodelProvider(widget.list.id).notifier)
-          .createNote();
-      _note = _note.copyWith(id: id);
+          .createNote(_note);
+      _noteCreated = true;
+      if (_pendingUpdates) {
+        _pendingUpdates = false;
+        _updateNote();
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -158,8 +162,8 @@ class _NoteDialogState extends ConsumerState<NotePage> {
     });
     _debounce?.cancel();
     _debounce = Timer(const Duration(seconds: 1), () async {
-      if (_note.id.isEmpty) {
-        _pendingSave = true;
+      if (!_noteCreated) {
+        _pendingUpdates = true;
       } else {
         try {
           await ref

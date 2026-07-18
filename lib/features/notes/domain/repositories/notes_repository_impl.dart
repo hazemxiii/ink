@@ -6,13 +6,14 @@ class NotesRepositoryImpl implements NotesRepository {
   NotesRepositoryImpl(this.remoteNotesDatasource);
   final NotesDatasource remoteNotesDatasource;
   @override
-  Future<String> create(String listId) async {
-    return await remoteNotesDatasource.create(listId);
+  Future<void> create(String listId, Note note) async {
+    await remoteNotesDatasource.create(listId, note);
   }
 
+  // TODO add local datasource
   @override
-  Future<Note> update(Note note) async {
-    return await remoteNotesDatasource.update(note);
+  Future<void> update(Note note) async {
+    await remoteNotesDatasource.update(note);
   }
 
   @override

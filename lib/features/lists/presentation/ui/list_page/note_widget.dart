@@ -134,7 +134,7 @@ class _NoteWidgetState extends ConsumerState<NoteWidget>
               ),
             ),
             Text(
-              "${widget.note.content.length} words",
+              "${widget.note.content.length} characters",
               style: TextStyle(color: theme.secTextC),
             ),
           ],

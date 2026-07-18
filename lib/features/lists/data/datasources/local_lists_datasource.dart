@@ -72,7 +72,7 @@ class LocalListsDatasource extends ListsDatasource {
         color: listSummary.color,
         notes: notes,
         createdAt: listSummary.createdAt,
-        // updatedAt: listSummary.updatedAt,
+        updatedAt: listSummary.updatedAt,
       );
       Logger.log("local list: ${localList.toJson()}");
       return localList;
@@ -96,7 +96,7 @@ class LocalListsDatasource extends ListsDatasource {
               color: l.color,
               notes: [],
               createdAt: l.createdAt,
-              // updatedAt: l.updatedAt,
+              updatedAt: l.updatedAt,
             ),
           )
           .toList();

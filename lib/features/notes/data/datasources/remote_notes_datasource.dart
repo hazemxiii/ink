@@ -15,7 +15,7 @@ class RemoteNotesDatasource extends NotesDatasource {
       "listId": listId,
       "title": note.title,
       "content": note.content,
-    });
+    }, isoDate: note.createdAt.toIso8601String());
     return Note.fromJson(noteData);
   }
 
@@ -24,7 +24,7 @@ class RemoteNotesDatasource extends NotesDatasource {
     final json = await apiService.patch("notes/${note.id}", {
       "title": note.title,
       "content": note.content,
-    });
+    }, isoDate: note.updatedAt.toIso8601String());
     try {
       return Note.fromJson(json);
     } catch (e) {
@@ -39,7 +39,10 @@ class RemoteNotesDatasource extends NotesDatasource {
   }
 
   @override
-  Future<Map<String, dynamic>> bulkDelete(List<String> noteIds) async {
+  Future<Map<String, dynamic>> bulkDelete(
+    String listId,
+    List<String> noteIds,
+  ) async {
     final response = await apiService.post("notes/bulk-delete", {
       "ids": noteIds,
     });
@@ -54,6 +57,7 @@ class RemoteNotesDatasource extends NotesDatasource {
 
   @override
   Future<Map<String, dynamic>> move(
+    String listId,
     List<String> noteIds,
     String newListId,
   ) async {
@@ -68,6 +72,11 @@ class RemoteNotesDatasource extends NotesDatasource {
       Logger.log(e.toString());
       throw InkException("Unexpected Error");
     }
+  }
+
+  @override
+  Future<Note> get(String noteId) {
+    throw UnimplementedError();
   }
 }
 

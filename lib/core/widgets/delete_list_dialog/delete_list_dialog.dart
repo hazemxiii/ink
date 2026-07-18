@@ -5,7 +5,6 @@ import 'package:ink/core/services/ink_toast_service.dart';
 import 'package:ink/core/viewmodels/theme_viewmodel.dart';
 import 'package:ink/core/widgets/delete_list_dialog/delete_list_item_widget.dart';
 import 'package:ink/core/widgets/ink_button.dart';
-import 'package:ink/features/lists/data/models/ink_list.dart';
 import 'package:ink/features/lists/domain/repositories/lists_repository.dart';
 import 'package:ink/features/lists/presentation/viewmodels/list_viewmodel.dart';
 import 'package:ink/features/lists/presentation/viewmodels/lists_viewmodel.dart';
@@ -21,7 +20,7 @@ class DeleteListDialog extends ConsumerStatefulWidget {
 
 class _DeleteListDialogState extends ConsumerState<DeleteListDialog> {
   late final ListViewmodel _listController;
-  late AsyncValue<InkList> _listState;
+  late AsyncValue<WatchListStreamData> _listState;
   late final AsyncValue<WatchListsStreamData> _listsState;
   late final InkTheme _theme;
   bool _isDeleteSelected = false;
@@ -41,8 +40,8 @@ class _DeleteListDialogState extends ConsumerState<DeleteListDialog> {
   Widget build(BuildContext context) {
     _listState = ref.watch(listViewmodelProvider(widget.listId));
     return _listState.when(
-      data: (list) {
-        final isEmpty = list.notes.isEmpty;
+      data: (data) {
+        final isEmpty = data.list.notes.isEmpty;
         final moveToLists = (_listsState.value?.lists ?? [])
             .where((l) => l.id != widget.listId)
             .toList();
@@ -56,7 +55,7 @@ class _DeleteListDialogState extends ConsumerState<DeleteListDialog> {
             borderRadius: BorderRadius.circular(12),
           ),
           title: Text(
-            'Delete List "${_listState.value!.name}"',
+            'Delete List "${data.list.name}"',
             style: TextStyle(color: _theme.textC),
           ),
           content: Column(
@@ -70,7 +69,7 @@ class _DeleteListDialogState extends ConsumerState<DeleteListDialog> {
                       style: TextStyle(color: _theme.secTextC),
                     )
                   : Text(
-                      'This list has ${list.notes.length} notes. What would you like to do?',
+                      'This list has ${data.list.notes.length} notes. What would you like to do?',
                       style: TextStyle(color: _theme.secTextC),
                     ),
               if (!isEmpty) ...[

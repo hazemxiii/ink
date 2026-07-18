@@ -11,7 +11,7 @@ class InkListSummary {
     this._color,
     required this._notesIds,
     required this._createdAt,
-    // required this._updatedAt,
+    required this._updatedAt,
   });
   factory InkListSummary.fromJson(Map<String, dynamic> json) {
     return InkListSummary(
@@ -22,9 +22,9 @@ class InkListSummary {
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
-      // updatedAt: json['updatedAt'] != null
-      //     ? DateTime.parse(json['updatedAt'])
-      //     : DateTime.now(),
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : DateTime.now().toUtc(),
     );
   }
 
@@ -35,7 +35,7 @@ class InkListSummary {
       color: parent.color,
       notesIds: parent.notes.map((note) => note.id).toList(),
       createdAt: parent.createdAt,
-      // updatedAt: parent.updatedAt,
+      updatedAt: parent.updatedAt,
     );
   }
 
@@ -46,7 +46,7 @@ class InkListSummary {
       'color': _color?.toHex,
       'notesIds': _notesIds,
       'createdAt': _createdAt.toIso8601String(),
-      // 'updatedAt': _updatedAt.toIso8601String(),
+      'updatedAt': _updatedAt.toIso8601String(),
     };
   }
 
@@ -55,12 +55,12 @@ class InkListSummary {
   final Color? _color;
   final List<String> _notesIds;
   final DateTime _createdAt;
-  // final DateTime _updatedAt;
+  final DateTime _updatedAt;
 
   String get id => _id;
   String get name => _name;
   Color? get color => _color;
   List<String> get notesIds => _notesIds;
   DateTime get createdAt => _createdAt;
-  // DateTime get updatedAt => _updatedAt;
+  DateTime get updatedAt => _updatedAt;
 }

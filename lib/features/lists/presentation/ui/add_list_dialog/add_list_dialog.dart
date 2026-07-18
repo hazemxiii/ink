@@ -118,8 +118,8 @@ class _AddListDialogState extends ConsumerState<AddListDialog> {
       name: _nameController.text,
       color: _selectedColor,
       notes: [],
-      createdAt: DateTime.now().toUtc(),
-      // updatedAt: DateTime.now().toUtc(),
+      createdAt: widget.list?.createdAt ?? DateTime.now().toUtc(),
+      updatedAt: DateTime.now().toUtc(),
     );
     // try {
     //   if (_isEditing) {

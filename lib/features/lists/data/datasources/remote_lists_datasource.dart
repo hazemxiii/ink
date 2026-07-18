@@ -45,10 +45,11 @@ class RemoteListsDatasource extends ListsDatasource {
 
   @override
   Future<InkList> updateList(InkList list) async {
-    final json = await _apiService.patch("lists/${list.id}", {
-      "name": list.name,
-      if (list.color != null) "color": list.color!.toHex,
-    });
+    final json = await _apiService.patch(
+      "lists/${list.id}",
+      isoDate: list.updatedAt.toIso8601String(),
+      {"name": list.name, if (list.color != null) "color": list.color!.toHex},
+    );
     try {
       json['notes'] = [];
       return InkList.fromJson(json);

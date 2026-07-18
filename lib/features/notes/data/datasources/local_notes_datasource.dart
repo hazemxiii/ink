@@ -12,9 +12,24 @@ class LocalNotesDatasource extends NotesDatasource {
   final Box _listsBox;
 
   @override
-  Future<Map<String, dynamic>> bulkDelete(List<String> noteIds) {
-    // TODO: implement bulkDelete
-    throw UnimplementedError();
+  Future<Note> get(String noteId) async {
+    final noteDoc = _notesBox.get(noteId);
+    if (noteDoc != null) {
+      Logger.log("Fetched note $noteDoc");
+      return Note.fromJson(Map<String, dynamic>.from(noteDoc));
+    }
+    throw Exception("Note not found");
+  }
+
+  @override
+  Future<Map<String, dynamic>> bulkDelete(
+    String listId,
+    List<String> noteIds,
+  ) async {
+    for (final noteId in noteIds) {
+      await delete(listId, noteId);
+    }
+    return {};
   }
 
   @override
@@ -28,7 +43,7 @@ class LocalNotesDatasource extends NotesDatasource {
       listSummary.notesIds.add(note.id);
       await _listsBox.put(listId, listSummary.toJson());
     }
-    Logger.log("Created in list $listId Note ${note.id}");
+    Logger.log("Created in list $listId Note ${note.toJson()}");
     return note;
   }
 
@@ -47,9 +62,16 @@ class LocalNotesDatasource extends NotesDatasource {
   }
 
   @override
-  Future<Map<String, dynamic>> move(List<String> noteIds, String newListId) {
-    // TODO: implement move
-    throw UnimplementedError();
+  Future<Map<String, dynamic>> move(
+    String listId,
+    List<String> noteIds,
+    String newListId,
+  ) async {
+    for (final noteId in noteIds) {
+      await delete(listId, noteId);
+      await create(newListId, await get(noteId));
+    }
+    return {};
   }
 
   @override
@@ -58,7 +80,7 @@ class LocalNotesDatasource extends NotesDatasource {
     if (noteDoc != null) {
       await _notesBox.put(note.id, note.toJson());
     }
-    Logger.log("Updated Note ${note.id}");
+    Logger.log("Updated Note ${note.toJson()}");
   }
 }
 

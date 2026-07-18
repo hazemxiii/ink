@@ -9,8 +9,12 @@ abstract class NotesRepository {
   Future<void> create(String listId, Note note);
   Future<void> update(Note note);
   Future<void> delete(String listId, String noteId);
-  Future<Map<String, dynamic>> bulkDelete(List<String> noteIds);
-  Future<Map<String, dynamic>> move(List<String> noteIds, String newListId);
+  Future<Map<String, dynamic>> bulkDelete(String listId, List<String> noteIds);
+  Future<Map<String, dynamic>> move(
+    String listId,
+    List<String> noteIds,
+    String newListId,
+  );
 }
 
 final notesRepositoryProvider = Provider<NotesRepository>(

@@ -28,8 +28,8 @@ class ListPage extends ConsumerWidget {
                 listViewmodelProvider(lists.lists.first.id),
               );
               return listState.when(
-                data: (list) {
-                  return ListSection(list: list);
+                data: (data) {
+                  return ListSection(list: data.list);
                 },
                 error: (error, stackTrace) {
                   return Text("error: $error");
@@ -49,8 +49,8 @@ class ListPage extends ConsumerWidget {
         }
         final listState = ref.watch(listViewmodelProvider(listId));
         return listState.when(
-          data: (list) {
-            return ListSection(list: list);
+          data: (data) {
+            return ListSection(list: data.list);
           },
           error: (error, stackTrace) {
             return Text("error: $error");

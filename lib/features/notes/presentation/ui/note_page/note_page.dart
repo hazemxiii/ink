@@ -109,27 +109,6 @@ class _NoteDialogState extends ConsumerState<NotePage> {
     );
   }
 
-  // void _createNote() {
-  //   _note = widget._note;
-  //   if (widget._createNew) {
-  //     if (_note.id.isNotEmpty) {
-  //       _note = Note.empty();
-  //     }
-  //     _loadingState = LoadingState.loading;
-  //     WidgetsBinding.instance.addPostFrameCallback((_) async {
-  //       await _createNewNote();
-  //       if (_pendingSave) {
-  //         _pendingSave = false;
-  //         _updateNote();
-  //       } else {
-  //         setState(() {
-  //           _loadingState = LoadingState.done;
-  //         });
-  //       }
-  //     });
-  //   }
-  // }
-
   Future<void> _createNewNote() async {
     final theme = ref.watch(themeViewmodelProvider);
     try {
@@ -167,7 +146,7 @@ class _NoteDialogState extends ConsumerState<NotePage> {
         try {
           await ref
               .read(listViewmodelProvider(widget.list.id).notifier)
-              .updateNote(_note);
+              .updateNote(_note.copyWith(updatedAt: DateTime.now().toUtc()));
           if (mounted) {
             setState(() {
               _loadingState = LoadingState.done;

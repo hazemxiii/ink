@@ -4,7 +4,7 @@ class Note {
     required this._title,
     required this._content,
     required this._createdAt,
-    // required this._updatedAt,
+    required this._updatedAt,
   });
 
   factory Note.empty() {
@@ -12,8 +12,8 @@ class Note {
       id: '',
       title: '',
       content: '',
-      createdAt: DateTime.now(),
-      // updatedAt: DateTime.now(),
+      createdAt: DateTime.now().toUtc(),
+      updatedAt: DateTime.now().toUtc(),
     );
   }
 
@@ -23,8 +23,12 @@ class Note {
       id: json['id'] ?? json['_id'],
       title: json['title'],
       content: json['content'],
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      // updatedAt: DateTime.parse(json['updatedAt'] as String),
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : DateTime.now().toUtc(),
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'] as String)
+          : DateTime.now().toUtc(),
     );
   }
 
@@ -33,14 +37,14 @@ class Note {
     String? title,
     String? content,
     DateTime? createdAt,
-    // DateTime? updatedAt,
+    DateTime? updatedAt,
   }) {
     return Note(
       id: id ?? _id,
       title: title ?? _title,
       content: content ?? _content,
       createdAt: createdAt ?? _createdAt,
-      // updatedAt: updatedAt ?? _updatedAt,
+      updatedAt: updatedAt ?? _updatedAt,
     );
   }
 
@@ -50,7 +54,7 @@ class Note {
       'title': _title,
       'content': _content,
       'createdAt': _createdAt.toIso8601String(),
-      // 'updatedAt': _updatedAt.toIso8601String(),
+      'updatedAt': _updatedAt.toIso8601String(),
     };
   }
 
@@ -58,11 +62,11 @@ class Note {
   final String _title;
   final String _content;
   final DateTime _createdAt;
-  // final DateTime _updatedAt;
+  final DateTime _updatedAt;
 
   String get id => _id;
   String get title => _title;
   String get content => _content;
   DateTime get createdAt => _createdAt;
-  // DateTime get updatedAt => _updatedAt;
+  DateTime get updatedAt => _updatedAt;
 }

@@ -6,7 +6,7 @@ class SyncQueue {
   SyncQueue({required this.prefs});
 
   final Prefs prefs;
-  late final List<SyncOperation> queue;
+  List<SyncOperation> queue = [];
   bool _initCalled = false;
 
   Future<void> init() async {
@@ -51,6 +51,10 @@ abstract class SyncOperation {
         return UpdateListOperation.fromJson(json);
       case 'deleteList':
         return DeleteListOperation.fromJson(json);
+      case 'upsertNote':
+        return UpsertNoteOperation.fromJson(json);
+      case 'deleteNote':
+        return DeleteNoteOperation.fromJson(json);
       default:
         throw UnimplementedError();
     }
@@ -153,6 +157,80 @@ class DeleteListOperation extends SyncOperation {
       'type': 'deleteList',
       'listId': listId,
       'moveToId': moveToId,
+      'tries': tries,
+      'isoDate': isoDate,
+    };
+  }
+}
+
+class UpsertNoteOperation extends SyncOperation {
+  UpsertNoteOperation({
+    required this.listId,
+    required this.noteId,
+    required this.content,
+    required this.title,
+    required super.tries,
+    required super.isoDate,
+    required this.isNew,
+  });
+
+  factory UpsertNoteOperation.fromJson(Map<String, dynamic> json) {
+    return UpsertNoteOperation(
+      listId: json['listId'],
+      noteId: json['noteId'],
+      content: json['content'],
+      title: json['title'],
+      tries: json['tries'] ?? 0,
+      isoDate: json['isoDate'],
+      isNew: json['isNew'] ?? false,
+    );
+  }
+
+  final String listId;
+  final String noteId;
+  final String content;
+  final String title;
+  final bool isNew;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'type': 'upsertNote',
+      'listId': listId,
+      'noteId': noteId,
+      'content': content,
+      'title': title,
+      'isNew': isNew,
+      'tries': tries,
+      'isoDate': isoDate,
+    };
+  }
+}
+
+class DeleteNoteOperation extends SyncOperation {
+  DeleteNoteOperation({
+    required this.listId,
+    required this.noteId,
+    required super.tries,
+    required super.isoDate,
+  });
+  factory DeleteNoteOperation.fromJson(Map<String, dynamic> json) {
+    return DeleteNoteOperation(
+      listId: json['listId'],
+      noteId: json['noteId'],
+      tries: json['tries'] ?? 0,
+      isoDate: json['isoDate'],
+    );
+  }
+  final String listId;
+  final String noteId;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'type': 'deleteNote',
+      'listId': listId,
+      'noteId': noteId,
       'tries': tries,
       'isoDate': isoDate,
     };

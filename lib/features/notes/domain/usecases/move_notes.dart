@@ -5,8 +5,12 @@ class MoveNotes {
   MoveNotes(this.notesRepository);
   final NotesRepository notesRepository;
 
-  Future<Map<String, dynamic>> call(List<String> noteIds, String newListId) {
-    return notesRepository.move(noteIds, newListId);
+  Future<Map<String, dynamic>> call(
+    String listId,
+    List<String> noteIds,
+    String newListId,
+  ) {
+    return notesRepository.move(listId, noteIds, newListId);
   }
 }
 

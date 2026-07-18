@@ -15,12 +15,13 @@ class SyncingViewmodel extends AsyncNotifier<void> {
   }
 
   Future<void> execute(SyncQueue queue) async {
+    return;
     if (await queue.isEmpty()) return;
     final remoteListsDatasource = ref.read(remoteListsDatasourceProvider);
     // final localListsDatasource = ref.read(localListsDatasourceProvider);
     for (final operation in queue.queue) {
       if (operation is CreateListOperation) {
-        remoteListsDatasource.createList(
+        await remoteListsDatasource.createList(
           InkList(
             id: operation.listId,
             name: operation.name,
@@ -31,6 +32,8 @@ class SyncingViewmodel extends AsyncNotifier<void> {
         );
       }
     }
+    queue.queue = [];
+    await queue.save();
   }
 }
 

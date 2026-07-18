@@ -34,7 +34,7 @@ class RemoteNotesDatasource extends NotesDatasource {
   }
 
   @override
-  Future<void> delete(String noteId) async {
+  Future<void> delete(String listId, String noteId) async {
     return await apiService.delete("notes/$noteId");
   }
 

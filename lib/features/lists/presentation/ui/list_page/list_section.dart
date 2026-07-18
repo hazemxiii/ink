@@ -11,9 +11,7 @@ import 'package:ink/features/lists/presentation/ui/list_page/list_header_widget.
 import 'package:ink/features/lists/presentation/ui/list_page/move_to_list_dialog.dart';
 import 'package:ink/features/lists/presentation/ui/list_page/note_widget.dart';
 import 'package:ink/features/lists/presentation/viewmodels/list_viewmodel.dart';
-import 'package:ink/features/notes/data/models/note.dart';
 import 'package:ink/features/notes/presentation/ui/note_page/note_page.dart';
-import 'package:uuid/v4.dart';
 
 class ListSection extends ConsumerStatefulWidget {
   const ListSection({super.key, required this.list});

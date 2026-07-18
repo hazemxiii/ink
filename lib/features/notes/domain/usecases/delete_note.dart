@@ -4,10 +4,9 @@ import 'package:ink/features/notes/data/repositories/notes_repository.dart';
 class DeleteNote {
   DeleteNote(this._notesRepository);
   final NotesRepository _notesRepository;
-  
-  
-  Future<void> call(String noteId) async {
-    return await _notesRepository.delete(noteId);
+
+  Future<void> call(String listId, String noteId) async {
+    return await _notesRepository.delete(listId, noteId);
   }
 }
 

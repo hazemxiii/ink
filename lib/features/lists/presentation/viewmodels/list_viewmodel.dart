@@ -11,7 +11,6 @@ import 'package:ink/features/notes/domain/usecases/create_note.dart';
 import 'package:ink/features/notes/domain/usecases/delete_note.dart';
 import 'package:ink/features/notes/domain/usecases/move_notes.dart';
 import 'package:ink/features/notes/domain/usecases/update_note.dart';
-import 'package:uuid/uuid.dart';
 
 class ListViewmodel extends StreamNotifier<InkList> {
   ListViewmodel(this.id);
@@ -53,7 +52,7 @@ class ListViewmodel extends StreamNotifier<InkList> {
   }
 
   Future<void> deleteNote(String noteId) async {
-    await ref.read(deleteNoteProvider)(noteId);
+    await ref.read(deleteNoteProvider)(id, noteId);
     state = AsyncValue.data(
       state.value!.copyWith(
         notes: state.value!.notes.where((e) => e.id != noteId).toList(),

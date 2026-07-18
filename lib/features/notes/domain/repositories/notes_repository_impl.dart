@@ -1,24 +1,39 @@
+import 'package:ink/core/exceptions/internet_ink_exception.dart';
+import 'package:ink/core/models/sync_queue.dart';
 import 'package:ink/features/notes/data/datasources/notes_datasource.dart';
 import 'package:ink/features/notes/data/models/note.dart';
 import 'package:ink/features/notes/data/repositories/notes_repository.dart';
 
 class NotesRepositoryImpl implements NotesRepository {
-  NotesRepositoryImpl(this.remoteNotesDatasource);
+  NotesRepositoryImpl(
+    this.remoteNotesDatasource,
+    this.localNotesDatasource,
+    this.syncQueue,
+  );
   final NotesDatasource remoteNotesDatasource;
+  final NotesDatasource localNotesDatasource;
+  final SyncQueue syncQueue;
+  // TODO integrate local source
   @override
   Future<void> create(String listId, Note note) async {
-    await remoteNotesDatasource.create(listId, note);
+    await localNotesDatasource.create(listId, note);
+    try {
+      await remoteNotesDatasource.create(listId, note);
+    } on InternetInkException {
+      //
+    } catch (e) {
+      await localNotesDatasource.delete(listId, note.id);
+    }
   }
 
-  // TODO add local datasource
   @override
   Future<void> update(Note note) async {
     await remoteNotesDatasource.update(note);
   }
 
   @override
-  Future<void> delete(String noteId) async {
-    return await remoteNotesDatasource.delete(noteId);
+  Future<void> delete(String listId, String noteId) async {
+    return await remoteNotesDatasource.delete(listId, noteId);
   }
 
   @override

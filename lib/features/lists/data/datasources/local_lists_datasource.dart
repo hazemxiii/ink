@@ -55,7 +55,11 @@ class LocalListsDatasource extends ListsDatasource {
   @override
   Future<InkList> getList(String id) async {
     try {
-      final listJson = Map<String, dynamic>.from(listsBox.get(id) ?? {});
+      final listDoc = listsBox.get(id);
+      if (listDoc == null) {
+        throw InkException("List $id not found");
+      }
+      final listJson = Map<String, dynamic>.from(listDoc);
       final listSummary = InkListSummary.fromJson(listJson);
       final notes = <Note>[];
       for (final noteId in listSummary.notesIds) {

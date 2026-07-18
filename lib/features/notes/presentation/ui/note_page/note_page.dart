@@ -17,7 +17,6 @@ class NotePage extends ConsumerStatefulWidget {
   const NotePage({super.key, required this._note, required this.list});
   final Note? _note;
   final InkList list;
-  // TODO create note id on the client
   @override
   ConsumerState<NotePage> createState() => _NoteDialogState();
 }

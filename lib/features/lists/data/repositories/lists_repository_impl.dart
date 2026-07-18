@@ -20,7 +20,6 @@ class ListsRepositoryImpl extends ListsRepository {
   Future<void> createList(InkList list) async {
     await _localListsDatasource.createList(list);
     try {
-      throw InternetInkException("Test");
       await _remoteListsDatasource.createList(list);
     } on InternetInkException {
       await _syncQueue.addOperation(

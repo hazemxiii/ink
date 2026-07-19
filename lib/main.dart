@@ -73,14 +73,11 @@ class Home extends ConsumerWidget {
         actions: [
           syncState.when(
             data: (data) {
-              return IconButton(
-                onPressed: () {
-                  // ref.read(syncQueueProvider).execute();
-                },
-                icon: Icon(Icons.sync, color: theme.textC),
-              );
+              return Icon(Icons.cloud_outlined, color: theme.mainC);
             },
-            loading: () => CircularProgressIndicator(color: theme.mainC),
+            loading: () {
+              return CircularProgressIndicator(color: theme.mainC);
+            },
             error: (error, stack) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 ref

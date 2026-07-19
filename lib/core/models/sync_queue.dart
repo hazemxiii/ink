@@ -43,7 +43,6 @@ class SyncQueue {
 abstract class SyncOperation {
   SyncOperation({required this.tries, required this.isoDate});
   factory SyncOperation.fromJson(Map<String, dynamic> json) {
-    json['isoDate'] = DateTime.now().toUtc().toIso8601String();
     switch (json['type']) {
       case 'createList':
         return CreateListOperation.fromJson(json);
@@ -55,6 +54,10 @@ abstract class SyncOperation {
         return UpsertNoteOperation.fromJson(json);
       case 'deleteNote':
         return DeleteNoteOperation.fromJson(json);
+      case 'bulkDeleteNote':
+        return BulkDeleteNoteOperation.fromJson(json);
+      case 'moveNotes':
+        return MoveNotesOperation.fromJson(json);
       default:
         throw UnimplementedError();
     }
@@ -231,6 +234,62 @@ class DeleteNoteOperation extends SyncOperation {
       'type': 'deleteNote',
       'listId': listId,
       'noteId': noteId,
+      'tries': tries,
+      'isoDate': isoDate,
+    };
+  }
+}
+
+class BulkDeleteNoteOperation extends SyncOperation {
+  BulkDeleteNoteOperation({
+    required this.noteIds,
+    required super.tries,
+    required super.isoDate,
+  });
+  factory BulkDeleteNoteOperation.fromJson(Map<String, dynamic> json) {
+    return BulkDeleteNoteOperation(
+      noteIds: List<String>.from(json['noteIds']),
+      tries: json['tries'] ?? 0,
+      isoDate: json['isoDate'],
+    );
+  }
+  final List<String> noteIds;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'type': 'bulkDeleteNote',
+      'noteIds': noteIds,
+      'tries': tries,
+      'isoDate': isoDate,
+    };
+  }
+}
+
+class MoveNotesOperation extends SyncOperation {
+  MoveNotesOperation({
+    required this.noteIds,
+    required this.targetListId,
+    required super.tries,
+    required super.isoDate,
+  });
+  factory MoveNotesOperation.fromJson(Map<String, dynamic> json) {
+    return MoveNotesOperation(
+      noteIds: List<String>.from(json['noteIds']),
+      targetListId: json['targetListId'],
+      tries: json['tries'] ?? 0,
+      isoDate: json['isoDate'],
+    );
+  }
+  final List<String> noteIds;
+  final String targetListId;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'type': 'moveNotes',
+      'noteIds': noteIds,
+      'targetListId': targetListId,
       'tries': tries,
       'isoDate': isoDate,
     };

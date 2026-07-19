@@ -5,12 +5,12 @@ class MoveNotes {
   MoveNotes(this.notesRepository);
   final NotesRepository notesRepository;
 
-  Future<Map<String, dynamic>> call(
+  Future<void> call(
     String listId,
     List<String> noteIds,
     String newListId,
-  ) {
-    return notesRepository.move(listId, noteIds, newListId);
+  ) async {
+    return await notesRepository.move(listId, noteIds, newListId);
   }
 }
 

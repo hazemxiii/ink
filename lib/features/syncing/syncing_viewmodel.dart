@@ -62,6 +62,19 @@ class SyncingViewmodel extends AsyncNotifier<void> {
           } else {
             await remoteNotesDatasource.update(note);
           }
+        } else if (operation is DeleteNoteOperation) {
+          await remoteNotesDatasource.delete(
+            operation.listId,
+            operation.noteId,
+          );
+        } else if (operation is BulkDeleteNoteOperation) {
+          await remoteNotesDatasource.bulkDelete("", operation.noteIds);
+        } else if (operation is MoveNotesOperation) {
+          await remoteNotesDatasource.move(
+            "",
+            operation.noteIds,
+            operation.targetListId,
+          );
         }
         newState.remove(operation);
       } on InternetInkException {

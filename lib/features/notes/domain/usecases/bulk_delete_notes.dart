@@ -5,7 +5,7 @@ class BulkDeleteNotes {
   BulkDeleteNotes(this.repository);
   final NotesRepository repository;
 
-  Future<Map<String, dynamic>> call(String listId, List<String> noteIds) async {
+  Future<void> call(String listId, List<String> noteIds) async {
     return await repository.bulkDelete(listId, noteIds);
   }
 }

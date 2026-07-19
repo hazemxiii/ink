@@ -19,16 +19,21 @@ class Note {
 
   factory Note.fromJson(dynamic json) {
     json = Map<String, dynamic>.from(json);
+    DateTime? createdAt;
+    if (json['createdAt'] != null && json['createdAt'] is String) {
+      createdAt = DateTime.parse(json['createdAt'] as String);
+    }
+    DateTime? updatedAt;
+    if (json['updatedAt'] != null && json['updatedAt'] is String) {
+      updatedAt = DateTime.parse(json['updatedAt'] as String);
+    }
+
     return Note(
       id: json['id'] ?? json['_id'],
       title: json['title'],
       content: json['content'],
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'] as String)
-          : DateTime.now().toUtc(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'] as String)
-          : DateTime.now().toUtc(),
+      createdAt: createdAt ?? DateTime.now().toUtc(),
+      updatedAt: updatedAt ?? DateTime.now().toUtc(),
     );
   }
 

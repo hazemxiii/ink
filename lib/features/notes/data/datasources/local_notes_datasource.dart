@@ -68,8 +68,9 @@ class LocalNotesDatasource extends NotesDatasource {
     String newListId,
   ) async {
     for (final noteId in noteIds) {
+      final note = await get(noteId);
+      await create(newListId, note);
       await delete(listId, noteId);
-      await create(newListId, await get(noteId));
     }
     return {};
   }

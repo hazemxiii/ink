@@ -169,24 +169,8 @@ class _ListSectionState extends ConsumerState<ListSection> {
   Future<void> moveNotes(String targetListId) async {
     final theme = ref.read(themeViewmodelProvider);
     try {
-      final result = await _listController.move(
-        _selectedNotesIds.toList(),
-        targetListId,
-      );
+      await _listController.move(_selectedNotesIds.toList(), targetListId);
       if (!mounted) return;
-      final failedNotes = result['failedNotes'] ?? [];
-      for (var note in failedNotes) {
-        final noteId = note['id'];
-        final reason = note['reason'];
-        ref
-            .read(inkToastServiceProvider)
-            .showErrorToast(
-              context,
-              theme,
-              'Error moving note $noteId',
-              reason,
-            );
-      }
       ref.invalidate(listViewmodelProvider(targetListId));
     } catch (e) {
       ref
@@ -204,24 +188,9 @@ class _ListSectionState extends ConsumerState<ListSection> {
     final theme = ref.read(themeViewmodelProvider);
 
     try {
-      final result = await _listController.bulkDeleteNotes(
-        _selectedNotesIds.toList(),
-      );
-      if (!mounted) return;
-      final failedNotes = result['failedNotes'] ?? [];
-      for (var note in failedNotes) {
-        final noteId = note['id'];
-        final reason = note['reason'];
-        ref
-            .read(inkToastServiceProvider)
-            .showErrorToast(
-              context,
-              theme,
-              'Error deleting note $noteId',
-              reason,
-            );
-      }
+      await _listController.bulkDeleteNotes(_selectedNotesIds.toList());
     } catch (e) {
+      if (!mounted) return;
       ref
           .read(inkToastServiceProvider)
           .showErrorToast(context, theme, 'Error deleting notes', e.toString());

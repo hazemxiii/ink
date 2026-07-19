@@ -74,41 +74,35 @@ class ListViewmodel extends StreamNotifier<WatchListStreamData> {
     );
   }
 
-  Future<Map<String, dynamic>> bulkDeleteNotes(List<String> noteIds) async {
+  Future<void> bulkDeleteNotes(List<String> noteIds) async {
     final bulkDeleteNotes = ref.read(bulkDeleteNotesProvider);
-    final result = await bulkDeleteNotes(id, noteIds);
-    final success = List<String>.from(result['deletedNotes'] ?? []);
+    await bulkDeleteNotes(id, noteIds);
+    // final success = List<String>.from(result['deletedNotes'] ?? []);
     state = AsyncValue.data(
       WatchListStreamData(
         list: state.value!.list.copyWith(
           notes: state.value!.list.notes
-              .where((e) => !success.contains(e.id))
+              .where((e) => !noteIds.contains(e.id))
               .toList(),
         ),
         done: state.value!.done,
       ),
     );
-    return result;
   }
 
-  Future<Map<String, dynamic>> move(
-    List<String> noteIds,
-    String newListId,
-  ) async {
+  Future<void> move(List<String> noteIds, String newListId) async {
     final moveNotes = ref.read(moveNotesProvider);
-    final result = await moveNotes(id, noteIds, newListId);
-    final success = List<String>.from(result['movedNotes'] ?? []);
+    await moveNotes(id, noteIds, newListId);
     state = AsyncValue.data(
       WatchListStreamData(
         list: state.value!.list.copyWith(
           notes: state.value!.list.notes
-              .where((e) => !success.contains(e.id))
+              .where((e) => !noteIds.contains(e.id))
               .toList(),
         ),
         done: state.value!.done,
       ),
     );
-    return result;
   }
 }
 

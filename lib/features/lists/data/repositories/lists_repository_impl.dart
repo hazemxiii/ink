@@ -68,7 +68,6 @@ class ListsRepositoryImpl extends ListsRepository {
       final remoteNotes = remoteList.notes;
       final localNotes = localList.notes;
 
-      final localIds = localNotes.map((note) => note.id).toSet();
       final remoteIds = remoteNotes.map((note) => note.id).toSet();
 
       for (final note in localNotes) {
@@ -81,7 +80,9 @@ class ListsRepositoryImpl extends ListsRepository {
         }
       }
       for (final note in remoteNotes) {
-        if (!localIds.contains(note.id)) {
+        try {
+          await _localNotesDatasource.get(note.id);
+        } catch (e) {
           await _localNotesDatasource.create(id, note);
         }
       }

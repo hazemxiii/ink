@@ -14,17 +14,21 @@ class InkListSummary {
     required this._updatedAt,
   });
   factory InkListSummary.fromJson(Map<String, dynamic> json) {
+    DateTime? createdAt;
+    if (json['createdAt'] != null && json['createdAt'] is String) {
+      createdAt = DateTime.parse(json['createdAt'] as String);
+    }
+    DateTime? updatedAt;
+    if (json['updatedAt'] != null && json['updatedAt'] is String) {
+      updatedAt = DateTime.parse(json['updatedAt'] as String);
+    }
     return InkListSummary(
       id: json['id'] ?? json['_id'] ?? '',
       name: json['name'] ?? '',
       color: json['color']?.toString().toColor,
       notesIds: List<String>.from(json['notesIds'] ?? []),
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
-          : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : DateTime.now().toUtc(),
+      createdAt: createdAt ?? DateTime.now(),
+      updatedAt: updatedAt ?? DateTime.now().toUtc(),
     );
   }
 
